@@ -5,16 +5,18 @@ cmake_policy(SET CMP0054 NEW)
 # Project
 project (FanSpeedControllerFirmware  C)
 
-#set (DATA_SIZE              128)
-#set (IDATA_SIZE             128)
-#set (XDATA_SIZE             1024)
+set (DATA_SIZE              128)
+set (IDATA_SIZE             128)
+set (XDATA_SIZE             1024)
 
 add_compile_options (
     "--std-sdcc2x" 
     "--use-non-free" 
     "--fsigned-char" 
     "-mmcs51" 
-    "--model-small")
+    "--iram-size" "${IDATA_SIZE}"
+    "--xram-size" "${XDATA_SIZE}"
+    )
 
 include_directories (
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
@@ -26,6 +28,12 @@ file (GLOB_RECURSE      SRC
 
 add_executable ("${PROJECT_NAME}"
     "${SRC}")
+
+add_link_options (
+    "-mmcs51" 
+    "--iram-size" "${IDATA_SIZE}"
+    "--xram-size" "${XDATA_SIZE}"
+    )
 
 add_custom_command (
     DEPENDS     "${PROJECT_NAME}"
