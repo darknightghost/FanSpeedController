@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
-set (CMAKE_CXX_STANDARD 17) 
-
 cmake_policy(SET CMP0054 NEW)
 
 # Project
 project (FanSpeedController)
+
+if (NOT CMAKE_BUILD_TYPE)
+    set (CMAKE_BUILD_TYPE   "Debug")
+
+endif ()
 
 set (CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}"  CACHE STRING "${CMAKE_BUILD_TYPE}" FORCE)
 
@@ -23,6 +26,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_CURRENT_SOURCE_DIR}/lib/${OUTPUT_SU
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_CURRENT_SOURCE_DIR}/bin/${OUTPUT_SUB_DIR}")
 
 # Firmware.
+message (NOTICE     "Configuring firmware...")
 file (MAKE_DIRECTORY        "${CMAKE_CURRENT_BINARY_DIR}/firmware")
 
 execute_process (
