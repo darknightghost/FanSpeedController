@@ -1,4 +1,5 @@
 #include <platform.h>
+#include <serial.h>
 
 int main()
 {
@@ -6,7 +7,5 @@ int main()
     platform_init();
 
     while (1) {
-        P3_2 = P3_3;
-        P5_5 = P5_4;
     }
 }

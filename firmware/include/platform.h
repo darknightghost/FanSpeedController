@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 // Definations of STC8G1K08-36I-SOP8
+// IRC = 33.1776 MHz
 
 #if defined EDITOR_AUTO_COMPLETE
     // Auto-complete.
@@ -12,6 +13,7 @@
     #define __at(addr)
     #define __sfr  uint8_t
     #define __sbit uint8_t
+    #define __interrupt
 
 #endif
 
@@ -41,6 +43,37 @@ __sfr __at(0xC9) P5M1;
 __sfr __at(0xCA) P5M0;
 
 #define P5PU (*((uint8_t *)0xFE15))
+
+// Serial
+__sfr __at(0x98) SCON;
+__sfr __at(0x99) SBUF;
+__sfr __at(0x87) PCON;
+
+// Timer
+__sfr __at(0x88) TCON;
+__sfr __at(0x89) TMOD;
+__sfr __at(0x8A) TL0;
+__sfr __at(0x8B) TL1;
+__sfr __at(0x8C) TH0;
+__sfr __at(0x8D) TH1;
+__sfr __at(0x8E) AUXR;
+
+// Interrupt
+__sfr __at(0xA8) IE;
+__sfr __at(0xAF) IE2;
+__sfr __at(0x8F) INTCLKO;
+__sfr __at(0xB8) IP;
+__sfr __at(0xB7) IPH;
+__sfr __at(0xB5) IP2;
+__sfr __at(0xB6) IP2H;
+__sfr __at(0xDF) IP3;
+__sfr __at(0xEE) IP3H;
+
+// Board
+#define PWM_INPUT    P5_4
+#define SPEED_OUTPUT P5_5
+#define SPEED_INPUT  P3_3
+#define PWM_OUTPUT   P3_2
 
 /**
  * @brief       Initialize platform.
