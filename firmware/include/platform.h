@@ -30,7 +30,7 @@ __sbit __at(0xB7) P3_7;
 __sfr __at(0xB1) P3M1;
 __sfr __at(0xB2) P3M0;
 
-//__sfr __at(0xFE13) P3PU;
+#define P3PU (*((uint8_t *)0xFE12))
 
 // P5
 __sfr  __at(0xC8) P5;
@@ -40,7 +40,7 @@ __sbit __at(0xCD) P5_5;
 __sfr __at(0xC9) P5M1;
 __sfr __at(0xCA) P5M0;
 
-//__sfr __at(0xFE15) P5PU;
+#define P5PU (*((uint8_t *)0xFE15))
 
 /**
  * @brief       Initialize platform.
