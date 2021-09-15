@@ -49,7 +49,7 @@ void platform_init()
     // Initialize pwm.
 
     // Enable interruption.
-    IE &= 0x80;
+    IE |= 0x80;
 
     // Start the clock.
 }
