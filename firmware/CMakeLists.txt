@@ -10,16 +10,18 @@ set (IDATA_SIZE             128)
 set (XDATA_SIZE             1024)
 
 add_compile_options (
-    "--std-sdcc2x" 
+    "--std-sdcc11" 
     "--use-non-free" 
     "--fsigned-char" 
     "-mmcs51" 
     "--iram-size" "${IDATA_SIZE}"
     "--xram-size" "${XDATA_SIZE}"
+    "-DBUILD_FIRMWARE"
     )
 
 include_directories (
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include"
     )
 
 file (GLOB_RECURSE      SRC

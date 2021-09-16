@@ -1,3 +1,5 @@
+#include <command.h>
+
 #include <platform.h>
 #include <serial.h>
 
@@ -19,10 +21,17 @@ void serial_init()
 }
 
 /**
+ * @brief       Enable serial.
+ */
+void enable_serial()
+{
+    IE |= 0x10;
+}
+
+/**
  * @brief       Serial ISR.
  */
-
-void serial_isr(void) __interrupt 4
+void serial_isr(void) __interrupt INT_UART1
 {
     if (SCON & 0x01) {
         // Received.

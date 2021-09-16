@@ -1,3 +1,4 @@
+#include <clock_io.h>
 #include <platform.h>
 #include <serial.h>
 
@@ -7,26 +8,12 @@
 void platform_init()
 {
     // Initialize I/O ports.
-    // P3
-    P3PU = 0x03;
-    P5PU = 0;
+    io_init();
 
-    P3M1 = 0xFC;
-    P3M0 = 0x0C;
-    P3   = 0xFF;
-
-    // P5
-    P5M1 = 0xFF;
-    P5M0 = 0x30;
-    P5   = 0xFF;
-
-    // Initialize interruption.
-    // EA=0, ES=1, ET0=1, EX1=1
-    IE      = 0x16;
+    // Disable interruption.
+    IE      = 0;
     IE2     = 0;
     INTCLKO = 0;
-    // Interrupt 1 : falling edge trigge.
-    TCON = 0x04;
 
     // Set interrupt priority
     // Interrupt 1: 2
@@ -41,15 +28,19 @@ void platform_init()
     IP3  = 0x00;
     IP3H = 0x00;
 
+    // Initialize clock.
+    clock_init();
+
     // Initialize serial.
     serial_init();
-
-    // Initialize clock.
 
     // Initialize pwm.
 
     // Enable interruption.
     IE |= 0x80;
 
-    // Start the clock.
+    // Enable functions.
+    enable_clock();
+    enable_io();
+    // enable_serial();
 }

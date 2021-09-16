@@ -14,6 +14,14 @@
     #define __sfr  uint8_t
     #define __sbit uint8_t
     #define __interrupt
+    #define INT_TIMER0
+    #define INT_INT1
+    #define INT_UART1
+
+#else
+    #define INT_TIMER0 1
+    #define INT_INT1   2
+    #define INT_UART1  4
 
 #endif
 
