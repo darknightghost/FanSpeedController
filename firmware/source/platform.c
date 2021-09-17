@@ -42,5 +42,5 @@ void platform_init()
     // Enable functions.
     enable_clock();
     enable_io();
-    // enable_serial();
+    enable_serial();
 }

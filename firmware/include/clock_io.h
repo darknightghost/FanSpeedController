@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+#include <command.h>
 #include <platform.h>
 
 /// 17μs a tick.
@@ -34,6 +35,20 @@ extern void io_init();
  * @brief       Enable I/O.
  */
 extern void enable_io();
+
+/**
+ * @brief       Get current mode.
+ *
+ * @reutrn      Current mode.
+ */
+extern uint8_t current_mode();
+
+/**
+ * @brief       Set current mode.
+ *
+ * @param[in]   mode    New mode.
+ */
+extern void set_current_mode(uint8_t mode);
 
 /**
  * @brief       INT1 ISR.

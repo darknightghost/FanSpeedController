@@ -1,6 +1,7 @@
 #include <clock_io.h>
 
 static uint32_t l_boot_time = 0;
+static uint8_t  l_mode      = FIRMWARE_MODE_NORMAL;
 
 /**
  * @brief       Initialize clock.
@@ -72,6 +73,22 @@ void io_init()
 void enable_io()
 {
     IE |= 0x04;
+}
+
+/**
+ * @brief       Get current mode.
+ */
+uint8_t current_mode()
+{
+    return l_mode;
+}
+
+/**
+ * @brief       Set current mode.
+ */
+void set_current_mode(uint8_t mode)
+{
+    l_mode = mode;
 }
 
 /**

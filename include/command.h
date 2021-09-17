@@ -11,11 +11,11 @@
 #endif
 
 /// Begining of the command.
-#define CMD_BEGIN ((uint8_t)0x00)
+#define CMD_BEGIN ((uint8_t)0xFF)
 
 /// Mode command.
-#define CMD_TYPE_GET_MODE ((uint8_t)0x10)
-#define CMD_TYPE_SET_MODE ((uint8_t)0x11)
+#define CMD_TYPE_GET_MODE ((uint8_t)0x00)
+#define CMD_TYPE_SET_MODE ((uint8_t)0x01)
 
 // Mode.
 #define FIRMWARE_MODE_NORMAL ((uint8_t)0x00)
@@ -23,8 +23,8 @@
 #define FIRMWARE_MODE_TEST   ((uint8_t)0x02)
 
 /// Board test command, test mode only.
-#define CMD_TYPE_READ_PORT  ((uint8_t)0x20)
-#define CMD_TYPE_WRITE_PORT ((uint8_t)0x21)
+#define CMD_TYPE_READ_PORT  ((uint8_t)0x10)
+#define CMD_TYPE_WRITE_PORT ((uint8_t)0x11)
 
 /// Port to read/write.
 #define PORT_READ_PWM_INPUT     ((uint8_t)0x00)
@@ -33,16 +33,15 @@
 #define PORT_WRITE_PWM_OUTPUT   ((uint8_t)0x01)
 
 /// Fan test command, manual mode only.
-#define CMD_TYPE_READ_SPEED ((uint8_t)0x30)
-#define CMD_TYPE_SET_PWM    ((uint8_t)0x31)
+#define CMD_TYPE_READ_SPEED ((uint8_t)0x20)
+#define CMD_TYPE_SET_PWM    ((uint8_t)0x21)
 
 /// Setting command.
-#define CMD_TYPE_READ_SPEED_MAP  ((uint8_t)0x40)
-#define CMD_TYPE_WRITE_SPEED_MAP ((uint8_t)0x41)
+#define CMD_TYPE_READ_SPEED_MAP  ((uint8_t)0x30)
+#define CMD_TYPE_WRITE_SPEED_MAP ((uint8_t)0x31)
 
-#define REPLY_TYPE_ILLEGAL ((uint8_t)0x00) ///< Command is illegal.
-#define REPLY_TYPE_FAILED  ((uint8_t)0x01) ///< Command failed.
-#define REPLY_TYPE_SUCCESS ((uint8_t)0x02) ///< Success.
+#define REPLY_TYPE_FAILED  ((uint8_t)0x00) ///< Command failed.
+#define REPLY_TYPE_SUCCESS ((uint8_t)0x01) ///< Success.
 
 #if defined __cplusplus
 /**
@@ -88,9 +87,8 @@ enum class WritablePort : uint8_t {
  * @brief   Reply type.
  */
 enum class ReplyType : uint8_t {
-    Illegal = REPLY_TYPE_ILLEGAL, ///< Illegal command.
-    Failed  = REPLY_TYPE_FAILED,  ///< Command failed.
-    Success = REPLY_TYPE_SUCCESS  ///< Success.
+    Failed  = REPLY_TYPE_FAILED, ///< Command failed.
+    Success = REPLY_TYPE_SUCCESS ///< Success.
 };
 
 #endif
@@ -190,13 +188,6 @@ struct ReplyHeader {
 #else
     uint8_t replyType; ///< Reply type.
 #endif
-};
-
-/**
- * @brief       Reply Illegal.
- */
-struct ReplyIllegal {
-    struct ReplyHeader header; ///< Header.
 };
 
 /**
