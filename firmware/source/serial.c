@@ -40,7 +40,7 @@ void enable_serial()
  */
 static inline int serial_read_byte(uint8_t *byte)
 {
-    __xdata uint32_t begin_time = boot_time();
+    __idata uint32_t begin_time = boot_time();
 
     // Wait for data.
     while (! (SCON & 0x01)) {

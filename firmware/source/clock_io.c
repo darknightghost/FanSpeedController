@@ -1,7 +1,21 @@
 #include <clock_io.h>
 
-static uint32_t l_boot_time = 0;
-static uint8_t  l_mode      = FIRMWARE_MODE_NORMAL;
+#define SAMPLING_TTICKS       11764
+#define SAMPLING_MICROSECONDS (SAMPLING_TTICKS * 17)
+
+static __data uint32_t l_boot_time = 0;                    ///< Boot time.
+static __data uint8_t  l_mode      = FIRMWARE_MODE_NORMAL; ///< Firmware mode.
+
+static __data uint16_t l_current_sampling_tick = 0; ///< Curent sampling tick.
+static __data uint16_t l_current_input_speed_tick_count
+    = 0; ///< Input speed ticks count.
+static __data uint16_t l_current_input_pwm_high_level_count
+    = 0; ///< Curent input pwm high-level ticks.
+
+static __data uint16_t l_output_speed_interval
+    = 0xFF; ///< Inverval to output low-level on speed output pin.
+static __data uint16_t l_output_speed_ticks_count
+    = 0; ///< Count to output low-level on speed output pin.
 
 /**
  * @brief       Initialize clock.
@@ -30,7 +44,7 @@ void enable_clock()
 uint32_t boot_time()
 {
     IE &= 0xFD;
-    uint32_t ret = l_boot_time;
+    __idata uint32_t ret = l_boot_time;
     IE |= 0x02;
     return ret;
 }
@@ -94,4 +108,7 @@ void set_current_mode(uint8_t mode)
 /**
  * @brief       INT1 ISR.
  */
-void int1_isr(void) __interrupt INT_INT1 {}
+void int1_isr(void) __interrupt INT_INT1
+{
+    ++l_current_input_speed_tick_count;
+}
