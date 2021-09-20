@@ -48,3 +48,11 @@ void platform_init()
     enable_io();
     enable_serial();
 }
+
+/**
+ * @brief       Reboot.
+ */
+void reboot()
+{
+    IAP_CONTR |= 0x60;
+}

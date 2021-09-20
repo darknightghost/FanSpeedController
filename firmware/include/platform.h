@@ -98,3 +98,8 @@ __sfr __at(0xF5) IAP_TPS;
  * @brief       Initialize platform.
  */
 extern void platform_init();
+
+/**
+ * @brief       Reboot.
+ */
+extern void reboot();

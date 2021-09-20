@@ -5,22 +5,8 @@
  * @brief       header.
  */
 struct record_allocation_table {
-    uint8_t records0_0; ///< 0x0000-0x007F.
-    uint8_t records0_1; ///< 0x0080-0x01FF.
-    uint8_t records1_0; ///< 0x0200-0x027F.
-    uint8_t records1_1; ///< 0x0280-0x03FF
-    uint8_t records2_0; ///< 0x0400-0x047F.
-    uint8_t records2_1; ///< 0x0480-0x05FF.
-    uint8_t records3_0; ///< 0x0600-0x067F.
-    uint8_t records3_1; ///< 0x0680-0x07FF.
-    uint8_t records4_0; ///< 0x0800-0x087F.
-    uint8_t records4_1; ///< 0x0880-0x09FF.
-    uint8_t records5_0; ///< 0x0A00-0x0A7F.
-    uint8_t records5_1; ///< 0x0A80-0x0BFF.
-    uint8_t records6_0; ///< 0x0C00-0x0C7F.
-    uint8_t records6_1; ///< 0x0C80-0x0DFF.
-    uint8_t records7_0; ///< 0x0E00-0x0E7F.
-    uint8_t records7_1; ///< 0x0E80-0x0FFF.
+    uint8_t bitmap[2 * 8];
+    uint8_t err;
 };
 
 #define PAGE_0 0x0000
@@ -36,7 +22,6 @@ _Static_assert(sizeof(struct record_allocation_table) < RECORD_SIZE,
                "Record allocation table is too big!");
 
 static __xdata struct record_allocation_table rat; ///< Record allocation table.
-static __xdata struct config_record default_record; ///< Default record.
 
 /**
  * @brief       Read byte.
@@ -198,43 +183,170 @@ static inline int8_t eeprom_format()
     }
 
     // Make RAT.
-    rat.records0_0 = 0xFC;
-    rat.records0_1 = 0xFF;
-    rat.records1_0 = 0xFF;
-    rat.records1_1 = 0xFF;
-    rat.records2_0 = 0xFF;
-    rat.records2_1 = 0xFF;
-    rat.records3_0 = 0xFF;
-    rat.records3_1 = 0xFF;
-    rat.records4_0 = 0xFF;
-    rat.records4_1 = 0xFF;
-    rat.records5_0 = 0xFF;
-    rat.records5_1 = 0xFF;
-    rat.records6_0 = 0xFF;
-    rat.records6_1 = 0xFF;
-    rat.records7_0 = 0xFF;
-    rat.records7_1 = 0xFF;
+    rat.bitmap[0] = 0xFE;
+    for (uint8_t i = 1; i < 16; ++i) {
+        rat.bitmap[i] = 0xFF;
+    }
+    rat.err = 0;
 
     // Write RAT.
     if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat)) < 0) {
         return -1;
     }
 
-    // Make default record.
-    for (uint8_t i = 0; i < 20; ++i) {
-        default_record.pwm_map[i] = 100;
-    }
-    default_record.sourceFullSpeed = 1000;
-    default_record.targetFullSpeed = 1000;
-
-    // Write record.
-    if (eeprom_write_bytes(PAGE_0 + RECORD_SIZE, (uint8_t *)(&default_record),
-                           sizeof(default_record))
-        < 0) {
-        return -1;
-    }
-
     return 0;
+}
+
+/**
+ * @brief       Get address to read.
+ */
+uint16_t get_read_addr()
+{
+    uint8_t group_count = 0;
+    for (; group_count < 16; ++group_count) {
+        if (rat.bitmap[group_count] != 0x00) {
+            break;
+        }
+    }
+
+    if (group_count == 16) {
+        return (8 * 16 - 1) * RECORD_SIZE;
+    }
+
+    switch (rat.bitmap[group_count]) {
+        case 0xFF:
+            return (8 * group_count - 1 + 0) * RECORD_SIZE;
+
+        case 0xFE:
+            return (8 * group_count - 1 + 1) * RECORD_SIZE;
+
+        case 0xFC:
+            return (8 * group_count - 1 + 2) * RECORD_SIZE;
+
+        case 0xF8:
+            return (8 * group_count - 1 + 3) * RECORD_SIZE;
+
+        case 0xF0:
+            return (8 * group_count - 1 + 4) * RECORD_SIZE;
+
+        case 0xE0:
+            return (8 * group_count - 1 + 5) * RECORD_SIZE;
+
+        case 0xC0:
+            return (8 * group_count - 1 + 6) * RECORD_SIZE;
+
+        case 0x80:
+            return (8 * group_count - 1 + 7) * RECORD_SIZE;
+
+        default:
+            rat.err = 1;
+            eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat));
+            reboot();
+            return 0;
+    }
+}
+
+/**
+ * @brief       Allocate address to write.
+ */
+uint16_t allocate_write_addr()
+{
+    uint8_t group_count = 0;
+    for (; group_count < 16; ++group_count) {
+        if (rat.bitmap[group_count] != 0x00) {
+            break;
+        }
+    }
+
+    if (group_count == 16) {
+        eeprom_format();
+        // Write RAT.
+        rat.bitmap[0] = 0xFC;
+        if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat)) < 0) {
+            return -1;
+        }
+        return RECORD_SIZE;
+    }
+
+    switch (rat.bitmap[group_count]) {
+        case 0xFF:
+            // Write RAT.
+            rat.bitmap[group_count] = 0xFE;
+            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
+                < 0) {
+                return -1;
+            }
+            return (8 * group_count + 0) * RECORD_SIZE;
+
+        case 0xFE:
+            // Write RAT.
+            rat.bitmap[group_count] = 0xFC;
+            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
+                < 0) {
+                return -1;
+            }
+            return (8 * group_count + 1) * RECORD_SIZE;
+
+        case 0xFC:
+            // Write RAT.
+            rat.bitmap[group_count] = 0xF8;
+            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
+                < 0) {
+                return -1;
+            }
+            return (8 * group_count + 2) * RECORD_SIZE;
+
+        case 0xF8:
+            // Write RAT.
+            rat.bitmap[group_count] = 0xF0;
+            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
+                < 0) {
+                return -1;
+            }
+            return (8 * group_count + 3) * RECORD_SIZE;
+
+        case 0xF0:
+            // Write RAT.
+            rat.bitmap[group_count] = 0xE0;
+            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
+                < 0) {
+                return -1;
+            }
+            return (8 * group_count + 4) * RECORD_SIZE;
+
+        case 0xE0:
+            // Write RAT.
+            rat.bitmap[group_count] = 0xC0;
+            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
+                < 0) {
+                return -1;
+            }
+            return (8 * group_count + 5) * RECORD_SIZE;
+
+        case 0xC0:
+            // Write RAT.
+            rat.bitmap[group_count] = 0x80;
+            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
+                < 0) {
+                return -1;
+            }
+            return (8 * group_count + 6) * RECORD_SIZE;
+
+        case 0x80:
+            // Write RAT.
+            rat.bitmap[group_count] = 0x00;
+            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
+                < 0) {
+                return -1;
+            }
+            return (8 * group_count + 7) * RECORD_SIZE;
+
+        default:
+            rat.err = 1;
+            eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat));
+            reboot();
+            return 0;
+    }
 }
 
 /**
@@ -244,14 +356,42 @@ void eeprom_init()
 {
     IAP_CONTR |= 0x80;
     IAP_TPS = 33;
+
+    // Read RAT;
+    if (eeprom_read_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat)) < 0) {
+        reboot();
+    }
+
+    if ((rat.bitmap[0] & 0x01) || rat.err) {
+        eeprom_format();
+
+        // Make default record.
+        __xdata struct config_record default_record;
+        for (uint8_t i = 0; i < 20; ++i) {
+            default_record.pwm_map[i] = 100;
+        }
+        default_record.sourceFullSpeed = 1000;
+        default_record.targetFullSpeed = 1000;
+
+        // Write record.
+        eeprom_write_record(&default_record);
+    }
 }
 
 /**
  * @brief       Read record.
  */
-void eeprom_read_record(struct config_record *record);
+void eeprom_read_record(struct config_record *record)
+{
+    uint16_t addr = get_read_addr();
+    eeprom_read_bytes(addr, (uint8_t *)record, sizeof(struct config_record));
+}
 
 /**
  * @brief       Write record.
  */
-void eeprom_write_record(struct config_record *record);
+void eeprom_write_record(struct config_record *record)
+{
+    uint16_t addr = allocate_write_addr();
+    eeprom_write_bytes(addr, (uint8_t *)record, sizeof(struct config_record));
+}
