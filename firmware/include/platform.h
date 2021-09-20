@@ -77,6 +77,17 @@ __sfr __at(0xB6) IP2H;
 __sfr __at(0xDF) IP3;
 __sfr __at(0xEE) IP3H;
 
+#define EEPROM_SIZE      4096
+#define EEPROM_PAGE_SIZE 512
+
+__sfr __at(0xC2) IAP_DATA;
+__sfr __at(0xC3) IAP_ADDRH;
+__sfr __at(0xC4) IAP_ADDRL;
+__sfr __at(0xC5) IAP_CMD;
+__sfr __at(0xC6) IAP_TRIG;
+__sfr __at(0xC7) IAP_CONTR;
+__sfr __at(0xF5) IAP_TPS;
+
 // Board
 #define PWM_INPUT    P5_4
 #define SPEED_OUTPUT P5_5

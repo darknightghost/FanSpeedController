@@ -7,8 +7,7 @@ int main()
     // Initialize.
     platform_init();
 
-    uint32_t tm    = boot_time() + 1000000;
-    uint8_t  count = 0;
     while (1) {
+        PCON |= 0x01;
     }
 }

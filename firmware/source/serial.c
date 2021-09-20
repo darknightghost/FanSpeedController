@@ -199,6 +199,29 @@ static inline void cmd_read_speed_map() {}
 static inline void cmd_write_speed_maps() {}
 
 /**
+ * @brief       Read current pwm map.
+ */
+static inline void cmd_read_pwm_map() {}
+
+/**
+ * @brief       Write current pwm map.
+ */
+static inline void cmd_write_pwm_maps() {}
+
+/**
+ * @brief       Read clock.
+ */
+static inline void cmd_read_clock()
+{
+    // Reply.
+    __xdata struct ReplyReadClock reply;
+    reply.header.replyType = REPLY_TYPE_SUCCESS;
+    reply.bootTime         = boot_time();
+
+    serial_write_bytes((uint8_t *)(&reply), (uint8_t)sizeof(reply));
+}
+
+/**
  * @brief       Handle command.
  */
 static inline void serial_on_command()
@@ -260,6 +283,18 @@ _PARSE_CMD:
 
         case CMD_TYPE_WRITE_SPEED_MAP: {
             goto _PARSE_CMD_WRITE_SPEED_MAP;
+        }
+
+        case CMD_TYPE_READ_PWM_MAP: {
+            goto _PARSE_CMD_READ_PWM_MAP;
+        }
+
+        case CMD_TYPE_WRITE_PWM_MAP: {
+            goto _PARSE_CMD_WRITE_PWM_MAP;
+        }
+
+        case CMD_TYPE_READ_CLOCK: {
+            goto _PARSE_CMD_READ_CLOCK;
         }
 
         default: {
@@ -400,6 +435,21 @@ _PARSE_CMD_READ_SPEED_MAP : {
 
 _PARSE_CMD_WRITE_SPEED_MAP : {
     serial_write_byte(REPLY_TYPE_FAILED);
+    return;
+}
+
+_PARSE_CMD_READ_PWM_MAP : {
+    serial_write_byte(REPLY_TYPE_FAILED);
+    return;
+}
+
+_PARSE_CMD_WRITE_PWM_MAP : {
+    serial_write_byte(REPLY_TYPE_FAILED);
+    return;
+}
+
+_PARSE_CMD_READ_CLOCK : {
+    cmd_read_clock();
     return;
 }
 }

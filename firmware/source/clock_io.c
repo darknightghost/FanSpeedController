@@ -17,6 +17,11 @@ static __data uint16_t l_output_speed_interval
 static __data uint16_t l_output_speed_ticks_count
     = 0; ///< Count to output low-level on speed output pin.
 
+static __data uint8_t
+    l_pwm_map[20]; ///< Count to output low-level on speed output pin.
+static __data uint16_t l_sourceFullSpeed; ///< Source full speed.
+static __data uint16_t l_targetFullSpeed; ///< Target full speed.
+
 /**
  * @brief       Initialize clock.
  */

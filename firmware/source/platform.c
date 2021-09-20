@@ -1,4 +1,5 @@
 #include <clock_io.h>
+#include <eeprom.h>
 #include <platform.h>
 #include <serial.h>
 
@@ -33,6 +34,9 @@ void platform_init()
 
     // Initialize serial.
     serial_init();
+
+    // Initialize eeprom.
+    eeprom_init();
 
     // Initialize pwm.
 

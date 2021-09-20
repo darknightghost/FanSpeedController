@@ -36,9 +36,16 @@
 #define CMD_TYPE_READ_SPEED ((uint8_t)0x20)
 #define CMD_TYPE_SET_PWM    ((uint8_t)0x21)
 
-/// Setting command.
+/// Speed map command.
 #define CMD_TYPE_READ_SPEED_MAP  ((uint8_t)0x30)
 #define CMD_TYPE_WRITE_SPEED_MAP ((uint8_t)0x31)
+
+/// PWM map command.
+#define CMD_TYPE_READ_PWM_MAP  ((uint8_t)0x40)
+#define CMD_TYPE_WRITE_PWM_MAP ((uint8_t)0x41)
+
+/// Read clock.
+#define CMD_TYPE_READ_CLOCK ((uint8_t)0x50)
 
 #define REPLY_TYPE_FAILED  ((uint8_t)0x00) ///< Command failed.
 #define REPLY_TYPE_SUCCESS ((uint8_t)0x01) ///< Success.
@@ -48,14 +55,17 @@
  * @brief       Command type.
  */
 enum class CMDType : uint8_t {
-    GetMode       = CMD_TYPE_GET_MODE,       ///< Get firmware mode.
-    SetMode       = CMD_TYPE_SET_MODE,       ///< Set firmware mode.
-    ReadPort      = CMD_TYPE_READ_PORT,      ///< Read output port.
-    WritePort     = CMD_TYPE_WRITE_PORT,     ///< Write input port.
-    ReadSpeed     = CMD_TYPE_READ_SPEED,     ///< Read fan speed.
-    SetPWM        = CMD_TYPE_SET_PWM,        ///< Set output pwm.
-    ReadSpeedMap  = CMD_TYPE_READ_SPEED_MAP, ///< Read current speed map.
-    WriteSpeedMap = CMD_TYPE_WRITE_SPEED_MAP ///< Write current speed map.
+    GetMode       = CMD_TYPE_GET_MODE,        ///< Get firmware mode.
+    SetMode       = CMD_TYPE_SET_MODE,        ///< Set firmware mode.
+    ReadPort      = CMD_TYPE_READ_PORT,       ///< Read output port.
+    WritePort     = CMD_TYPE_WRITE_PORT,      ///< Write input port.
+    ReadSpeed     = CMD_TYPE_READ_SPEED,      ///< Read fan speed.
+    SetPWM        = CMD_TYPE_SET_PWM,         ///< Set output pwm.
+    ReadSpeedMap  = CMD_TYPE_READ_SPEED_MAP,  ///< Read current speed map.
+    WriteSpeedMap = CMD_TYPE_WRITE_SPEED_MAP, ///< Write current speed map.
+    ReadPWMMap    = CMD_TYPE_READ_PWM_MAP,    ///< Read current PWM map.
+    WritePWMMap   = CMD_TYPE_WRITE_PWM_MAP,   ///< Write current PWM map.
+    ReadClock     = CMD_TYPE_READ_CLOCK       ///< Read clock..
 };
 
 /**
@@ -175,8 +185,31 @@ struct CMDReadSpeedMap {
  * @brief       Command WriteSpeedMap.
  */
 struct CMDWriteSpeedMap {
+    struct CMDHeader header;          ///< Command header.
+    uint16_t         sourceFullSpeed; ///< Source full speed(rpm).
+    uint16_t         targetFullSpeed; ///< Target full speed(rpm).
+};
+
+/**
+ * @brief       Command ReadPWMMap.
+ */
+struct CMDReadPWMMap {
+    struct CMDHeader header; ///< Command header.
+};
+
+/**
+ * @brief       Command WritePWMMap.
+ */
+struct CMDWritePWMMap {
     struct CMDHeader header;    ///< Command header.
     uint8_t          rates[20]; ///< 5% a stage, 0-100.
+};
+
+/**
+ * @brief       Command ReadClock.
+ */
+struct CMDReadClock {
+    struct CMDHeader header; ///< Command header.
 };
 
 /**
@@ -251,8 +284,9 @@ struct ReplySetPWM {
  * @brief       Reply ReadSpeedMap.
  */
 struct ReplyReadSpeedMap {
-    struct ReplyHeader header;    ///< Header.
-    uint8_t            rates[20]; ///< 5% a stage, 0-100.
+    struct ReplyHeader header;          ///< Header.
+    uint16_t           sourceFullSpeed; ///< Source full speed(rpm).
+    uint16_t           targetFullSpeed; ///< Target full speed(rpm).
 };
 
 /**
@@ -260,6 +294,29 @@ struct ReplyReadSpeedMap {
  */
 struct ReplyWriteSpeedMap {
     struct ReplyHeader header; ///< Header.
+};
+
+/**
+ * @brief       Reply ReadPWMMap.
+ */
+struct ReplyReadPWMMap {
+    struct ReplyHeader header;    ///< Header.
+    uint8_t            rates[20]; ///< 5% a stage, 0-100.
+};
+
+/**
+ * @brief       Reply WriteSpeedMap.
+ */
+struct ReplyWritePWMMap {
+    struct ReplyHeader header; ///< Header.
+};
+
+/**
+ * @brief       Reply ReadClock.
+ */
+struct ReplyReadClock {
+    struct ReplyHeader header;   ///< Header.
+    uint32_t           bootTime; ///< Boot time.
 };
 
 #if ! defined BUILD_FIRMWARE
