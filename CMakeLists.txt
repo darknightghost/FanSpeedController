@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 cmake_policy(SET CMP0054 NEW)
 
+set ("CMAKE_SYSTEM_NAME"    "Generic")
+
 # Project
-project (FanSpeedController)
+project (FanSpeedController NONE)
 
 if (NOT CMAKE_BUILD_TYPE)
     set (CMAKE_BUILD_TYPE   "Debug")
@@ -30,8 +32,7 @@ message (NOTICE     "Configuring firmware...")
 file (MAKE_DIRECTORY        "${CMAKE_CURRENT_BINARY_DIR}/firmware")
 
 execute_process (
-    COMMAND             "cmake" "-DCMAKE_SYSTEM_NAME=Generic" 
-                        "-DCMAKE_C_COMPILER=sdcc" 
+    COMMAND             "cmake" 
                         "${CMAKE_CURRENT_SOURCE_DIR}/firmware"
                         "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" 
                         "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" 

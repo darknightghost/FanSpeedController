@@ -2,6 +2,21 @@ cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
 
 cmake_policy(SET CMP0054 NEW)
 
+# sdcc
+find_program (SDCC_EXECUTABLE
+    sdcc)
+
+if (SDCC_EXECUTABLE)
+    message (STATUS "SDCC found - ${SDCC_EXECUTABLE}")
+
+else ()
+    message (FATAL_ERROR    "Missing SDCC")
+
+endif ()
+
+set ("CMAKE_SYSTEM_NAME"    "Generic")
+set ("CMAKE_C_COMPILER"     "${SDCC_EXECUTABLE}")
+
 # Project
 project (FanSpeedControllerFirmware  C)
 
