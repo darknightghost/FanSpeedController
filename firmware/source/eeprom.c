@@ -220,7 +220,19 @@ static inline int8_t eeprom_format()
         return -1;
     }
 
-    // Write default record.
+    // Make default record.
+    for (uint8_t i = 0; i < 20; ++i) {
+        default_record.pwm_map[i] = 100;
+    }
+    default_record.sourceFullSpeed = 1000;
+    default_record.targetFullSpeed = 1000;
+
+    // Write record.
+    if (eeprom_write_bytes(PAGE_0 + RECORD_SIZE, (uint8_t *)(&default_record),
+                           sizeof(default_record))
+        < 0) {
+        return -1;
+    }
 
     return 0;
 }
