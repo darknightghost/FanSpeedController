@@ -29,16 +29,16 @@ class BoardController : public QThread {
   private:
     StringTable *m_stringTable; ///< String table.
 
-    QSerialPort *m_serialPort; ///< Serial port.
+    QThread *    m_serialThread; ///< Serial thread.
+    QSerialPort *m_serialPort;   ///< Serial port.
 
   public:
     /**
      * @brief       Constructor.
      *
-     * @param[in]   parent              Parent
      * @param[in]   stringTable         String table.
      */
-    BoardController(QObject *parent, StringTable *stringTable);
+    BoardController(StringTable *stringTable);
 
     /**
      * @brief       Destructor.
@@ -78,6 +78,11 @@ class BoardController : public QThread {
     void firmwareModeUpdated(FirmwareMode mode);
 
   public slots:
+    /**
+     * @brief       Quit.
+     */
+    void quit();
+
     /**
      * @brief       Open serial.
      *

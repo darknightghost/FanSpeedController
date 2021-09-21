@@ -9,7 +9,7 @@ MainWindow::MainWindow() :
     QWidget(nullptr), m_stringTable(new StringTable(this))
 {
     this->setWindowTitle(m_stringTable->getString("STR_TITLE"));
-    m_boardController = new BoardController(this, m_stringTable);
+    m_boardController = new BoardController(m_stringTable);
     m_boardController->start();
 
     QVBoxLayout *layout = new QVBoxLayout();
@@ -33,7 +33,10 @@ MainWindow::MainWindow() :
 /**
  * @brief       Destructor.
  */
-MainWindow::~MainWindow() {}
+MainWindow::~MainWindow()
+{
+    delete m_boardController;
+}
 
 /**
  * @brief         Close event.

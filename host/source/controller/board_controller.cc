@@ -5,15 +5,31 @@
 /**
  * @brief       Constructor.
  */
-BoardController::BoardController(QObject *parent, StringTable *stringTable) :
-    QThread(parent), m_stringTable(stringTable),
-    m_serialPort(new QSerialPort(this))
-{}
+BoardController::BoardController(StringTable *stringTable) :
+    QThread(nullptr), m_stringTable(stringTable), m_serialThread(this),
+    m_serialPort(new QSerialPort(nullptr))
+{
+    this->moveToThread(this);
+    m_serialThread->start();
+    m_serialPort->moveToThread(m_serialThread);
+}
 
 /**
  * @brief       Destructor.
  */
-BoardController::~BoardController() {}
+BoardController::~BoardController()
+{
+    delete m_serialPort;
+}
+
+/**
+ * @brief       Quit.
+ */
+void BoardController::quit()
+{
+    m_serialThread->quit();
+    this->QThread::quit();
+}
 
 /**
  * @brief       Open serial.
