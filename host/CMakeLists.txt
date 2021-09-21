@@ -4,6 +4,24 @@ set (CMAKE_CXX_STANDARD 17)
 
 cmake_policy(SET CMP0054 NEW)
 
+if (WIN32)
+    # MSVC
+    find_program (MSVC_EXECUTABLE
+        cl)
+
+    if (SDCC_EXECUTABLE)
+        message (STATUS "MSVC found - ${MSVC_EXECUTABLE}")
+
+    else ()
+        message (FATAL_ERROR    "Missing MSVC")
+
+    endif ()
+
+    set ("CMAKE_SYSTEM_NAME"    "CXX")
+    set ("CMAKE_C_COMPILER"     "${MSVC_EXECUTABLE}")
+
+endif ()
+
 # Project
 project (FanSpeedController)
 
