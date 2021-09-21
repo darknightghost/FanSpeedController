@@ -44,12 +44,48 @@
 		"en_US" : "Port \"%1\" opened."
 	},
 	"STR_MESSAGE_PORT_OPEN_FAILED":{
-		"zh_CN" : "打开串口\"%1\"失败",
+		"zh_CN" : "打开串口\"%1\"失败.",
 		"en_US" : "Failed to open port \"%1\"."
 	},
 	"STR_MESSAGE_PORT_CLOSED":{
-		"zh_CN" : "串口\"%1\"已关闭",
+		"zh_CN" : "串口\"%1\"已关闭.",
 		"en_US" : "Port \"%1\" closed."
+	},
+	"STR_MESSAGE_COMMAND_SEND":{
+		"zh_CN" : "命令已发送 : %1.",
+		"en_US" : "Command sent : %1."
+	},
+	"STR_MESSAGE_COMMAND_SEND_FAILED":{
+		"zh_CN" : "命令发送失败.",
+		"en_US" : "Failed to send command."
+	},
+	"STR_MESSAGE_WAITING_REPLY":{
+		"zh_CN" : "正在等待应答...",
+		"en_US" : "Waiting for reply..."
+	},
+	"STR_MESSAGE_REPLY":{
+		"zh_CN" : "已接收应答数据 : %1.",
+		"en_US" : "Reply Data received : %1."
+	},
+	"STR_MESSAGE_REPLY_RECV_FAILED":{
+		"zh_CN" : "接收应答失败.",
+		"en_US" : "Failed to receive reply."
+	},
+	"STR_MESSAGE_REPLY_OUT_OF_TIME":{
+		"zh_CN" : "应答超时.",
+		"en_US" : "Reply out of time."
+	},
+	"STR_MESSAGE_REPLY_PARSE_ERROR":{
+		"zh_CN" : "解析应答失败.",
+		"en_US" : "Reply parse error."
+	},
+	"STR_MESSAGE_OPERATION_FAILED":{
+		"zh_CN" : "操作失败.",
+		"en_US" : "Operation succeeded."
+	},
+	"STR_MESSAGE_OPERATION_SUCCEED":{
+		"zh_CN" : "操作成功.",
+		"en_US" : "Operation failed."
 	},
 	"STR_FIRMWARE_MODE_NORMAL":{
 		"zh_CN" : "正常模式",

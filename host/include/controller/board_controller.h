@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 #include <QtCore/QMetaEnum>
 #include <QtCore/QThread>
 #include <QtSerialPort/QSerialPort>
@@ -96,7 +98,7 @@ class BoardController : public QThread {
     /**
      * @brief       Update firmware mode.
      */
-    void updatetFirmwareMode();
+    void updateFirmwareMode();
 
     /**
      * @brief       Set firmware mode.
@@ -104,4 +106,28 @@ class BoardController : public QThread {
      * @param[in]   ode        Mode to set.
      */
     void setFirmwareMode(FirmwareMode mode);
+
+  private:
+    /**
+     * @brief       Send command.
+     *
+     * @param[in]   data    Data to send.
+     * @param[in]   size    Size of data.
+     *
+     * @return      Bytes sent, or -1 when failed.
+     */
+    qint64 sendCommand(const uint8_t *data, size_t size);
+
+    /**
+     * @brief       Receive reply.
+     *
+     * @param[out]  data    Data received.
+     * @param[in]   size    Size to receive.
+     * @param[in]   timeout Timeout.
+     *
+     * @return      Bytes received, or -1 when failed.
+     */
+    qint64 receiveReply(uint8_t *                   data,
+                        size_t                      size,
+                        ::std::chrono::milliseconds timeout);
 };

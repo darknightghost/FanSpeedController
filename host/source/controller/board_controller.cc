@@ -78,9 +78,234 @@ void BoardController::updateOpenStatus()
 /**
  * @brief       Update firmware mode.
  */
-void BoardController::updatetFirmwareMode() {}
+void BoardController::updateFirmwareMode()
+{
+    if (! m_serialPort->isOpen()) {
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+    m_serialPort->clear();
+
+    // Send command.
+    CMDGetMode command;
+    command.header.cmdBegin = CMD_BEGIN;
+    command.header.cmdType  = CMDType::GetMode;
+
+    if (this->sendCommand(reinterpret_cast<const uint8_t *>(&command),
+                          sizeof(command))
+        < 0) {
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_COMMAND_SEND_FAILED"));
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+
+    emit this->printInfo(
+        m_stringTable->getString("STR_MESSAGE_COMMAND_SEND")
+            .arg(QString::fromUtf8(
+                QByteArray(reinterpret_cast<char *>(&command), sizeof(command))
+                    .toHex(' ')
+                    .toUpper())));
+
+    // Get reply.
+    ReplyGetMode reply;
+    uint8_t *    pReply = reinterpret_cast<uint8_t *>(&reply);
+
+    // Receive first byte.
+    if (this->receiveReply(pReply, sizeof(uint8_t),
+                           ::std::chrono::milliseconds(1000))
+        < 0) {
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+    switch (reply.header.replyType) {
+        case ReplyType::Success:
+            break;
+
+        case ReplyType::Failed:
+            emit this->printInfo(
+                m_stringTable->getString("STR_MESSAGE_REPLY")
+                    .arg(QString::fromUtf8(
+                        QByteArray(reinterpret_cast<char *>(pReply),
+                                   sizeof(uint8_t))
+                            .toHex(' ')
+                            .toUpper())));
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            return;
+
+        default:
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_REPLY_PARSE_ERROR"));
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            return;
+    }
+
+    // Receive remaining data,
+    if (this->receiveReply(pReply + 1, sizeof(reply) - sizeof(uint8_t),
+                           ::std::chrono::milliseconds(1000))
+        < 0) {
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+
+    emit this->printInfo(
+        m_stringTable->getString("STR_MESSAGE_REPLY")
+            .arg(QString::fromUtf8(
+                QByteArray(reinterpret_cast<char *>(&reply), sizeof(reply))
+                    .toHex(' ')
+                    .toUpper())));
+    // Parse type.
+    switch (reply.mode) {
+        case FirmwareMode::Normal:
+        case FirmwareMode::Manual:
+        case FirmwareMode::Test:
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_OPERATION_SUCCEED"));
+            emit this->firmwareModeUpdated(reply.mode);
+            return;
+
+        default:
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_REPLY_PARSE_ERROR"));
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            return;
+    }
+}
 
 /**
  * @brief       Set firmware mode.
  */
-void BoardController::setFirmwareMode(FirmwareMode mode) {}
+void BoardController::setFirmwareMode(FirmwareMode mode)
+{
+    if (! m_serialPort->isOpen()) {
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+    m_serialPort->clear();
+
+    // Send command.
+    CMDSetMode command;
+    command.header.cmdBegin = CMD_BEGIN;
+    command.header.cmdType  = CMDType::SetMode;
+    command.mode            = mode;
+
+    if (this->sendCommand(reinterpret_cast<const uint8_t *>(&command),
+                          sizeof(command))
+        < 0) {
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_COMMAND_SEND_FAILED"));
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+
+    emit this->printInfo(
+        m_stringTable->getString("STR_MESSAGE_COMMAND_SEND")
+            .arg(QString::fromUtf8(
+                QByteArray(reinterpret_cast<char *>(&command), sizeof(command))
+                    .toHex(' ')
+                    .toUpper())));
+
+    // Get reply.
+    ReplySetMode reply;
+    uint8_t *    pReply = reinterpret_cast<uint8_t *>(&reply);
+
+    // Receive first byte.
+    if (this->receiveReply(pReply, sizeof(reply),
+                           ::std::chrono::milliseconds(1000))
+        < 0) {
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
+        emit this->printError(
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+
+    emit this->printInfo(
+        m_stringTable->getString("STR_MESSAGE_REPLY")
+            .arg(QString::fromUtf8(
+                QByteArray(reinterpret_cast<char *>(&reply), sizeof(reply))
+                    .toHex(' ')
+                    .toUpper())));
+
+    switch (reply.header.replyType) {
+        case ReplyType::Success:
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_OPERATION_SUCCEED"));
+            break;
+
+        case ReplyType::Failed:
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            return;
+
+        default:
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_REPLY_PARSE_ERROR"));
+            emit this->printError(
+                m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            return;
+    }
+}
+
+/**
+ * @brief       Send command.
+ */
+qint64 BoardController::sendCommand(const uint8_t *data, size_t size)
+{
+    // Send data.
+    qint64 ret = 0;
+    while (ret < static_cast<qint64>(size)) {
+        qint64 sizeWritten = m_serialPort->write(
+            reinterpret_cast<const char *>(data + ret), size - ret);
+        if (sizeWritten > 0) {
+            ret += sizeWritten;
+
+        } else {
+            return -1;
+        }
+    }
+
+    return ret;
+}
+
+/**
+ * @brief       Receive reply.
+ */
+qint64 BoardController::receiveReply(uint8_t *                   data,
+                                     size_t                      size,
+                                     ::std::chrono::milliseconds timeout)
+{
+    // Receive data.
+    qint64 received = 0;
+    while (received < static_cast<qint64>(size)) {
+        if (! m_serialPort->waitForReadyRead(timeout.count())) {
+            emit this->printInfo(
+                m_stringTable->getString("STR_MESSAGE_REPLY_OUT_OF_TIME"));
+            return -1;
+        }
+        qint64 sizeRead = m_serialPort->read(
+            reinterpret_cast<char *>(data + received), size - received);
+        if (sizeRead < 0) {
+            emit this->printInfo(
+                m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
+            return -1;
+        } else {
+            received += sizeRead;
+        }
+    }
+
+    return received;
+}
