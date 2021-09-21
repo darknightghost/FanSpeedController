@@ -22,10 +22,10 @@ void BoardController::open(QString name)
 {
     if (m_serialPort->isOpen()) {
         m_serialPort->close();
-        m_serialPort->clear();
     }
 
     // Open port.
+    m_serialPort->clear();
     m_serialPort->setPortName(name);
     if (m_serialPort->open(QIODevice::ReadWrite)) {
         m_serialPort->setBaudRate(QSerialPort::Baud9600,
@@ -44,7 +44,6 @@ void BoardController::open(QString name)
         emit this->printError(
             m_stringTable->getString("STR_MESSAGE_PORT_OPEN_FAILED").arg(name));
         m_serialPort->close();
-        m_serialPort->clear();
         this->updateOpenStatus();
     }
 }
