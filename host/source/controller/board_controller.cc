@@ -43,6 +43,7 @@ void BoardController::open(QString name)
         qDebug() << "Failed to open port" << name << ".";
         emit this->printError(
             m_stringTable->getString("STR_MESSAGE_PORT_OPEN_FAILED").arg(name));
+        m_serialPort->close();
         m_serialPort->clear();
         this->updateOpenStatus();
     }
@@ -65,12 +66,7 @@ void BoardController::close()
 /**
  * @brief       Update open status.
  */
-void BoardController::updateOpenStatus() {}
-
-/**
- * @brief       Update firmware mode.
- */
-void BoardController::updatetFirmwareMode()
+void BoardController::updateOpenStatus()
 {
     if (m_serialPort->isOpen()) {
         emit this->opened();
@@ -78,6 +74,11 @@ void BoardController::updatetFirmwareMode()
         emit this->closed();
     }
 }
+
+/**
+ * @brief       Update firmware mode.
+ */
+void BoardController::updatetFirmwareMode() {}
 
 /**
  * @brief       Set firmware mode.
