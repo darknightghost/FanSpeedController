@@ -4,26 +4,21 @@ set (CMAKE_CXX_STANDARD 17)
 
 cmake_policy(SET CMP0054 NEW)
 
-if (WIN32)
-    # MSVC
-    find_program (MSVC_EXECUTABLE
-        cl)
+# Project
+project (FanSpeedController C CXX)
 
-    if (SDCC_EXECUTABLE)
-        message (STATUS "MSVC found - ${MSVC_EXECUTABLE}")
-
-    else ()
-        message (FATAL_ERROR    "Missing MSVC")
-
-    endif ()
-
-    set ("CMAKE_SYSTEM_NAME"    "CXX")
-    set ("CMAKE_C_COMPILER"     "${MSVC_EXECUTABLE}")
+# Build type
+if (NOT CMAKE_BUILD_TYPE)
+    set (CMAKE_BUILD_TYPE "Debug")
 
 endif ()
 
-# Project
-project (FanSpeedController)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions ("-DDEBUG")
+
+endif ()
+
+set (CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}"  CACHE STRING "${CMAKE_BUILD_TYPE}" FORCE)
 
 if (GENERATOR_IS_MULTI_CONFIG OR CMAKE_CONFIGURATION_TYPES)
     set (CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "${CMAKE_BUILD_TYPE}" FORCE)
@@ -85,13 +80,14 @@ if (MSVC)
         message (FATAL_ERROR "Unsupported Platform: ${CMAKE_SYSTEM_PROCESSOR}")
 
     endif ()
+    add_compile_options ("/WX")
 
     # Output directory.
     set (MSVC_CONFIG_TYPE ${CMAKE_BUILD_TYPE})
     string (TOUPPER ${CMAKE_BUILD_TYPE} OUTPUTCONFIG)
-    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_CURRENT_SOURCE_DIR}/bin/${OUTPUT_SUB_DIR}")
-    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_CURRENT_SOURCE_DIR}/lib/${OUTPUT_SUB_DIR}")
-    set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_CURRENT_SOURCE_DIR}/lib/${OUTPUT_SUB_DIR}")
+    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+    set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
 
     # Ignore warnings of functions like strcpy(), strcmp()...
     add_compile_options ("-D_CRT_SECURE_NO_WARNINGS")
@@ -108,19 +104,22 @@ if (MSVC)
         set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /DEBUG /OPT:REF /OPT:ICF")
 
     endif ()
+else ()
+    add_compile_options ("-Werror")
+    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+        set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g")
+
+    endif ()
+
 endif ()
 
 # Dependencies
-find_package (PythonInterp REQUIRED 3)
+find_package (PythonInterp 
+    REQUIRED        3)
 
-find_package (Qt5Core REQUIRED)
-find_package (Qt5Widgets REQUIRED)
-find_package (Qt5Network REQUIRED)
-
-if ("${Qt5Core_VERSION}" VERSION_LESS "5.14.1")
-    message (FATAL_ERROR "The version of Qt5 must be greater than 5.14.1.")
-
-endif ()
+find_package (Qt5       5.14.1  REQUIRED
+    COMPONENTS  Core Widgets Network Xml)
 
 # Sources
 file (GLOB_RECURSE HEADERS
@@ -162,7 +161,7 @@ list (REMOVE_ITEM RESOURCES     ${RESOURCE_LIST_FILE})
 add_custom_command (
     OUTPUT      ${RESOURCE_LIST_FILE}
     COMMAND     ${GENERATE_RESOURCE_CMD} ${RESOURCES} -r "${CMAKE_CURRENT_SOURCE_DIR}/resource" -o "${RESOURCE_LIST_FILE}"
-    DEPENDS     "${CMAKE_CURRENT_SOURCE_DIR}/generate_resource.py")
+    DEPENDS     ${RESOURCES} "${CMAKE_CURRENT_SOURCE_DIR}/CHANGELOG" "${CMAKE_CURRENT_SOURCE_DIR}/generate_resource.py")
 
 # Qt wrappers
 qt5_wrap_cpp (WRAPPED_HEADERS ${HEADERS})
@@ -176,6 +175,8 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     Qt5::Core
     Qt5::Widgets
+    Qt5::Network
+    Qt5::Xml
     )
 
 if (WIN32)
@@ -185,4 +186,3 @@ if (WIN32)
         )
 
 endif ()
-

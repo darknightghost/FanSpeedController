@@ -20,8 +20,8 @@ set ("CMAKE_C_COMPILER"     "${SDCC_EXECUTABLE}")
 # Project
 project (FanSpeedControllerFirmware  C)
 
-if (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-    message (FATAL_ERROR        "MSVC is not able to compile the firmware!")
+if (NOT CMAKE_C_COMPILER_ID STREQUAL "SDCC")
+    message (FATAL_ERROR        "You should use sdcc to compile the firmware!")
 
 endif ()
 

@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 cmake_policy(SET CMP0054 NEW)
 
-set ("CMAKE_SYSTEM_NAME"    "Generic")
+option (MSVC_GENERATOR		"Visual Studio 16 2019")
+
+if (NOT MSVC_GENERATOR)
+    set (MSVC_GENERATOR		"Visual Studio 16 2019")
+endif ()
 
 # Project
 project (FanSpeedController NONE)
@@ -61,7 +65,7 @@ execute_process (
                         "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" 
                         "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" 
                         "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-                        "-G" "${CMAKE_GENERATOR}"
+                        "-G" "${MSVC_GENERATOR}"
                         "${CMAKE_CURRENT_SOURCE_DIR}/host"
     WORKING_DIRECTORY   "${CMAKE_CURRENT_BINARY_DIR}/host"
     RESULT_VARIABLE     result)
