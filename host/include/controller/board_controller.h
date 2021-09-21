@@ -123,11 +123,8 @@ class BoardController : public QThread {
      *
      * @param[out]  data    Data received.
      * @param[in]   size    Size to receive.
-     * @param[in]   timeout Timeout.
      *
      * @return      Bytes received, or -1 when failed.
      */
-    qint64 receiveReply(uint8_t *                   data,
-                        size_t                      size,
-                        ::std::chrono::milliseconds timeout);
+    qint64 receiveReply(uint8_t *data, size_t size);
 };

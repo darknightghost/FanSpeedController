@@ -114,9 +114,7 @@ void BoardController::updateFirmwareMode()
     uint8_t *    pReply = reinterpret_cast<uint8_t *>(&reply);
 
     // Receive first byte.
-    if (this->receiveReply(pReply, sizeof(uint8_t),
-                           ::std::chrono::milliseconds(1000))
-        < 0) {
+    if (this->receiveReply(pReply, sizeof(uint8_t)) < 0) {
         emit this->printError(
             m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
         emit this->printError(
@@ -148,9 +146,7 @@ void BoardController::updateFirmwareMode()
     }
 
     // Receive remaining data,
-    if (this->receiveReply(pReply + 1, sizeof(reply) - sizeof(uint8_t),
-                           ::std::chrono::milliseconds(1000))
-        < 0) {
+    if (this->receiveReply(pReply + 1, sizeof(reply) - sizeof(uint8_t)) < 0) {
         emit this->printError(
             m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
         emit this->printError(
@@ -223,9 +219,7 @@ void BoardController::setFirmwareMode(FirmwareMode mode)
     uint8_t *    pReply = reinterpret_cast<uint8_t *>(&reply);
 
     // Receive first byte.
-    if (this->receiveReply(pReply, sizeof(reply),
-                           ::std::chrono::milliseconds(1000))
-        < 0) {
+    if (this->receiveReply(pReply, sizeof(reply)) < 0) {
         emit this->printError(
             m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
         emit this->printError(
@@ -284,14 +278,12 @@ qint64 BoardController::sendCommand(const uint8_t *data, size_t size)
 /**
  * @brief       Receive reply.
  */
-qint64 BoardController::receiveReply(uint8_t *                   data,
-                                     size_t                      size,
-                                     ::std::chrono::milliseconds timeout)
+qint64 BoardController::receiveReply(uint8_t *data, size_t size)
 {
     // Receive data.
     qint64 received = 0;
     while (received < static_cast<qint64>(size)) {
-        if (! m_serialPort->waitForReadyRead(timeout.count())) {
+        if (! m_serialPort->waitForReadyRead(10000)) {
             emit this->printInfo(
                 m_stringTable->getString("STR_MESSAGE_REPLY_OUT_OF_TIME"));
             return -1;
@@ -306,6 +298,7 @@ qint64 BoardController::receiveReply(uint8_t *                   data,
             received += sizeRead;
         }
     }
+    m_serialPort->flush();
 
     return received;
 }
