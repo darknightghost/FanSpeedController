@@ -72,5 +72,5 @@ if (NOT result EQUAL 0)
 endif ()
 
 add_custom_target (host ALL
-    COMMAND             "cmake" "--build" "."
+    COMMAND             "cmake" "--build" "."  "--config" "${CMAKE_BUILD_TYPE}"
     WORKING_DIRECTORY   "${CMAKE_CURRENT_BINARY_DIR}/host")
