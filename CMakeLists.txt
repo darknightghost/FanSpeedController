@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 cmake_policy(SET CMP0054 NEW)
 
-option (MSVC_GENERATOR		"Visual Studio 16 2019")
+if (WIN32)
+    option (MSVC_GENERATOR		"Visual Studio 16 2019")
 
-if (NOT MSVC_GENERATOR)
-    set (MSVC_GENERATOR		"Visual Studio 16 2019")
+    if (NOT MSVC_GENERATOR)
+        set (MSVC_GENERATOR		"Visual Studio 16 2019")
+    endif ()
 endif ()
 
 # Project
@@ -59,13 +61,20 @@ add_custom_target (firmware ALL
 message (NOTICE     "Configuring host...")
 file (MAKE_DIRECTORY        "${CMAKE_CURRENT_BINARY_DIR}/host")
 
+if (WIN32)
+    set (HOST_GENERATOR     "${MSVC_GENERATOR}")
+
+else ()
+    set (HOST_GENERATOR     "${CMAKE_GENERATOR}")
+
+endif ()
 execute_process (
     COMMAND             "cmake" 
                         "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
                         "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" 
                         "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" 
                         "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-                        "-G" "${MSVC_GENERATOR}"
+                        "-G" "${HOST_GENERATOR}"
                         "${CMAKE_CURRENT_SOURCE_DIR}/host"
     WORKING_DIRECTORY   "${CMAKE_CURRENT_BINARY_DIR}/host"
     RESULT_VARIABLE     result)
