@@ -20,6 +20,11 @@ set ("CMAKE_C_COMPILER"     "${SDCC_EXECUTABLE}")
 # Project
 project (FanSpeedControllerFirmware  C)
 
+if (MSVC)
+    message (FATAL_ERROR        "MSVC is not able to compare toe firmware!")
+
+endif ()
+
 set (DATA_SIZE              128)
 set (IDATA_SIZE             128)
 set (XDATA_SIZE             1024)
