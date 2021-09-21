@@ -122,6 +122,7 @@ void SerialWidget::onBtnRefreshClicked()
     }
     if (m_comboSerial->count() > 0) {
         m_comboSerial->setCurrentIndex(index);
+        m_btnOpenClose->setEnabled(true);
     } else {
         m_btnOpenClose->setEnabled(false);
     }
