@@ -31,6 +31,18 @@
 		"zh_CN" : "错误 : %1",
 		"en_US" : "Error : %1"
 	},
+	"STR_MESSAGE_PORT_OPENED":{
+		"zh_CN" : "打开串口\"%1\"成功.",
+		"en_US" : "Port \"%1\" opened."
+	},
+	"STR_MESSAGE_PORT_OPEN_FAILED":{
+		"zh_CN" : "打开串口\"%1\"失败",
+		"en_US" : "Failed to open port \"%1\"."
+	},
+	"STR_MESSAGE_PORT_CLOSED":{
+		"zh_CN" : "串口\"%1\"已关闭",
+		"en_US" : "Port \"%1\" closed."
+	},
 	"STR_FIRMWARE_MODE_NORMAL":{
 		"zh_CN" : "正常模式",
 		"en_US" : "Normal Mode"

@@ -35,12 +35,12 @@ class MessageWidget : public QWidget {
      *
      * @param[in]   message     Message.
      */
-    void printInfo(QString message);
+    void onPrintInfo(QString message);
 
     /**
      * @brief       Print error message.
      *
      * @param[in]   message     Message.
      */
-    void printError(QString message);
+    void onPrintError(QString message);
 };

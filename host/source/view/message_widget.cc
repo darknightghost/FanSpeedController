@@ -25,7 +25,7 @@ MessageWidget::~MessageWidget() {}
 /**
  * @brief       Print info message.
  */
-void MessageWidget::printInfo(QString message)
+void MessageWidget::onPrintInfo(QString message)
 {
     m_textEdit->append(
         m_stringTable->getString("STR_MESSAGE_INFO").arg(message));
@@ -35,7 +35,7 @@ void MessageWidget::printInfo(QString message)
 /**
  * @brief       Print error message.
  */
-void MessageWidget::printError(QString message)
+void MessageWidget::onPrintError(QString message)
 {
     m_textEdit->append(
         m_stringTable->getString("STR_MESSAGE_ERROR").arg(message));

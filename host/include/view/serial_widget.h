@@ -51,7 +51,17 @@ class SerialWidget : public QWidget {
     void onClosed();
 
     /**
-     * @brief       On update serial list.
+     * @brief       On button open clicked.
      */
-    void onUpdateSerialLists();
+    void onBtnOpenClicked();
+
+    /**
+     * @brief       On button close clicked.
+     */
+    void onBtnCloseClicked();
+
+    /**
+     * @brief       On button refresh clicked.
+     */
+    void onBtnRefreshClicked();
 };

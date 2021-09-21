@@ -27,12 +27,14 @@ SerialWidget::SerialWidget(QWidget *        parent,
 
     m_btnOpenClose = new QPushButton(m_stringTable->getString("STR_BTN_OPEN"));
     layout->addWidget(m_btnOpenClose, 0, 2);
+    this->connect(m_btnOpenClose, &QPushButton::clicked, this,
+                  &SerialWidget::onBtnOpenClicked);
 
     m_btnRefresh = new QPushButton(m_stringTable->getString("STR_BTN_REFRESH"));
     layout->addWidget(m_btnRefresh, 0, 3);
     this->connect(m_btnRefresh, &QPushButton::clicked, this,
-                  &SerialWidget::onUpdateSerialLists);
-    this->onUpdateSerialLists();
+                  &SerialWidget::onBtnRefreshClicked);
+    this->onBtnRefreshClicked();
 
     layout->setColumnStretch(0, 0);
     layout->setColumnStretch(1, 100);
@@ -54,17 +56,56 @@ SerialWidget::~SerialWidget() {}
 /**
  * @brief       Opened slots.
  */
-void SerialWidget::onOpened() {}
+void SerialWidget::onOpened()
+{
+    m_btnOpenClose->setText(m_stringTable->getString("STR_BTN_CLOSE"));
+    m_btnOpenClose->disconnect();
+    this->connect(m_btnOpenClose, &QPushButton::clicked, this,
+                  &SerialWidget::onBtnCloseClicked);
+    m_btnOpenClose->setEnabled(true);
+    m_btnRefresh->setEnabled(false);
+}
 
 /**
  * @brief       Closed slots.
  */
-void SerialWidget::onClosed() {}
+void SerialWidget::onClosed()
+{
+    m_btnOpenClose->setText(m_stringTable->getString("STR_BTN_OPEN"));
+    m_btnOpenClose->disconnect();
+    this->connect(m_btnOpenClose, &QPushButton::clicked, this,
+                  &SerialWidget::onBtnOpenClicked);
+    m_btnOpenClose->setEnabled(true);
+    m_btnRefresh->setEnabled(true);
+}
 
 /**
- * @brief       Update serial list.
+ * @brief       On button open clicked.
  */
-void SerialWidget::onUpdateSerialLists()
+void SerialWidget::onBtnOpenClicked()
+{
+    m_btnOpenClose->setEnabled(false);
+    m_btnRefresh->setEnabled(false);
+    QMetaObject::invokeMethod(m_boardController, "open",
+                              Qt::ConnectionType::QueuedConnection,
+                              Q_ARG(QString, m_comboSerial->currentText()));
+}
+
+/**
+ * @brief       On button close clicked.
+ */
+void SerialWidget::onBtnCloseClicked()
+{
+    m_btnOpenClose->setEnabled(false);
+    m_btnRefresh->setEnabled(false);
+    QMetaObject::invokeMethod(m_boardController, "close",
+                              Qt::ConnectionType::QueuedConnection);
+}
+
+/**
+ * @brief       On button refresh clicked.
+ */
+void SerialWidget::onBtnRefreshClicked()
 {
     QString oldSelection = m_comboSerial->currentText();
     m_comboSerial->clear();
@@ -81,5 +122,7 @@ void SerialWidget::onUpdateSerialLists()
     }
     if (m_comboSerial->count() > 0) {
         m_comboSerial->setCurrentIndex(index);
+    } else {
+        m_btnOpenClose->setEnabled(false);
     }
 }

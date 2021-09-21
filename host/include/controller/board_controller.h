@@ -1,10 +1,12 @@
 #pragma once
 
-#include <command.h>
-
 #include <QtCore/QMetaEnum>
 #include <QtCore/QThread>
 #include <QtSerialPort/QSerialPort>
+
+#include <command.h>
+
+#include <locale/string_table.h>
 
 /**
  * @brief       Board controller.
@@ -23,15 +25,18 @@ class BoardController : public QThread {
     Q_ENUM(WritablePort);
 
   private:
-    QSerialPort m_serialPort; ///< Serial port.
+    StringTable *m_stringTable; ///< String table.
+
+    QSerialPort *m_serialPort; ///< Serial port.
 
   public:
     /**
      * @brief       Constructor.
      *
-     * @param[in]   parent      Parent.
+     * @param[in]   parent              Parent
+     * @param[in]   stringTable         String table.
      */
-    BoardController(QObject *parent);
+    BoardController(QObject *parent, StringTable *stringTable);
 
     /**
      * @brief       Destructor.
@@ -54,14 +59,14 @@ class BoardController : public QThread {
      *
      * @param[in]   message     Message.
      */
-    void info(QString message);
+    void printInfo(QString message);
 
     /**
      * @brief       Error signal.
      *
      * @param[in]   message     Error message.
      */
-    void error(QString message);
+    void printError(QString message);
 
     /**
      * @brief       Firmware mode signal.
@@ -71,6 +76,18 @@ class BoardController : public QThread {
     void firmwareModeUpdated(FirmwareMode mode);
 
   public slots:
+    /**
+     * @brief       Open serial.
+     *
+     * @param[in]   name        Name of the port.
+     */
+    void open(QString name);
+
+    /**
+     * @brief       Close serial.
+     */
+    void close();
+
     /**
      * @brief       Update open status.
      */
