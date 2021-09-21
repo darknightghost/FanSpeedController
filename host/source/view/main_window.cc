@@ -18,6 +18,10 @@ MainWindow::MainWindow() :
     m_serialWidget = new SerialWidget(this, m_boardController, m_stringTable);
     layout->addWidget(m_serialWidget);
 
+    m_firmwareModeWidget
+        = new FirmwareModeWidget(this, m_boardController, m_stringTable);
+    layout->addWidget(m_firmwareModeWidget);
+
     m_messageWidget = new MessageWidget(this, m_stringTable);
     layout->addWidget(m_messageWidget);
     m_boardController->connect(m_boardController, &BoardController::printInfo,

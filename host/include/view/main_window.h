@@ -6,6 +6,7 @@
 #include <controller/board_controller.h>
 #include <locale/string_table.h>
 
+#include <view/firmware_mode_widget.h>
 #include <view/message_widget.h>
 #include <view/serial_widget.h>
 
@@ -15,7 +16,8 @@ class MainWindow : public QWidget {
     BoardController *m_boardController; ///< Board controller.
     StringTable *    m_stringTable;     ///< String table.
 
-    SerialWidget *m_serialWidget; ///< Serial widget.
+    SerialWidget *      m_serialWidget;       ///< Serial widget.
+    FirmwareModeWidget *m_firmwareModeWidget; ///< Firmware mode widget.
 
     MessageWidget *m_messageWidget; ///< Message widget.
 

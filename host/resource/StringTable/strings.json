@@ -15,13 +15,21 @@
 		"zh_CN" : "刷新(&R)",
 		"en_US" : "&Refresh"
 	},
+	"STR_BTN_SET" : {
+		"zh_CN" : "设置(&S)",
+		"en_US" : "&Set"
+	},
 	"STR_LABEL_SERIAL" : {
 		"zh_CN" : "串口 :",
 		"en_US" : "Serial :"
 	},
-	"STR_LABEL_FIRMWARE_MODE" : {
-		"zh_CN" : "固件模式 :",
-		"en_US" : "Firmware Mode :"
+	"STR_LABEL_SET_FIRMWARE_MODE" : {
+		"zh_CN" : "设置固件模式 :",
+		"en_US" : "Set Firmware Mode :"
+	},
+	"STR_LABEL_CURRENT_FIRMWARE_MODE" : {
+		"zh_CN" : "当前固件模式 :",
+		"en_US" : "Current Firmware Mode :"
 	},
 	"STR_MESSAGE_INFO":{
 		"zh_CN" : "信息 : %1",

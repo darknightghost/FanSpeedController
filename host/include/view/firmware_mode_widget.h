@@ -8,19 +8,18 @@
 #include <locale/string_table.h>
 
 /**
- * @brief       Serial widget.
+ * @brief       Message widget.
  */
-class SerialWidget : public QWidget {
+class FirmwareModeWidget : public QWidget {
     Q_OBJECT;
 
   private:
     BoardController *m_boardController; ///< Board controller.
+    StringTable *    m_stringTable;     ///< String table.
 
-    QComboBox *  m_comboSerial;  ///< Combobox to select serial.
-    QPushButton *m_btnOpenClose; ///< Button open/close.
-    QPushButton *m_btnRefresh;   ///< Button refresh.
-
-    StringTable *m_stringTable; ///< String table.
+    QComboBox *  m_comboFirmwareMode; ///< Combobox to select mode.
+    QPushButton *m_btnSet;            ///< Button open/close.
+    QLineEdit *  m_txtCurrentMode;    ///< Text to show current mode.
 
   public:
     /**
@@ -30,14 +29,14 @@ class SerialWidget : public QWidget {
      * @param[in]   boardController     Board controller.
      * @param[in]   stringTable         String table.
      */
-    SerialWidget(QWidget *        parent,
-                 BoardController *boardController,
-                 StringTable *    stringTable);
+    FirmwareModeWidget(QWidget *        parent,
+                       BoardController *boardController,
+                       StringTable *    stringTable);
 
     /**
      * @brief       Destructor.
      */
-    virtual ~SerialWidget();
+    virtual ~FirmwareModeWidget();
 
   private slots:
     /**
@@ -53,15 +52,12 @@ class SerialWidget : public QWidget {
     /**
      * @brief       On button open clicked.
      */
-    void onBtnOpenClicked();
+    void onBtnSetClicked();
 
     /**
-     * @brief       On button close clicked.
+     * @brief       Firmware mode updated.
+     *
+     * @param[in]   mode    Firmware mode.
      */
-    void onBtnCloseClicked();
-
-    /**
-     * @brief       On button refresh clicked.
-     */
-    void onBtnRefreshClicked();
+    void onFirmwareModeUpdated(BoardController::FirmwareMode mode);
 };
