@@ -21,7 +21,7 @@ set ("CMAKE_C_COMPILER"     "${SDCC_EXECUTABLE}")
 project (FanSpeedControllerFirmware  C)
 
 if (MSVC)
-    message (FATAL_ERROR        "MSVC is not able to compare toe firmware!")
+    message (FATAL_ERROR        "MSVC is not able to compile the firmware!")
 
 endif ()
 
