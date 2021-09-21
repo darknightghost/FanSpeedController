@@ -63,18 +63,28 @@ class BoardController : public QThread {
      */
     void error(QString message);
 
+    /**
+     * @brief       Firmware mode signal.
+     *
+     * @param[in]   mode    Firmware mode.
+     */
+    void firmwareModeUpdated(FirmwareMode mode);
+
   public slots:
     /**
-     * @brief       Get firmware mode.
-     *
-     * @param[out]  mode        Mode.
+     * @brief       Update open status.
      */
-    void getMode(FirmwareMode *mode);
+    void updateOpenStatus();
+
+    /**
+     * @brief       Update firmware mode.
+     */
+    void updatetFirmwareMode();
 
     /**
      * @brief       Set firmware mode.
      *
      * @param[in]   ode        Mode to set.
      */
-    void SetMode(FirmwareMode mode);
+    void setFirmwareMode(FirmwareMode mode);
 };

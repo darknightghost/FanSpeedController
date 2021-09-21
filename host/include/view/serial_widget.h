@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtWidgets/QComboBox>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 
 #include <controller/board_controller.h>
@@ -27,8 +28,11 @@ class SerialWidget : public QWidget {
      *
      * @param[in]   parent              Parent widget.
      * @param[in]   boardController     Board controller.
+     * @param[in]   stringTable         String table.
      */
-    SerialWidget(QWidget *parent, BoardController *boardController);
+    SerialWidget(QWidget *        parent,
+                 BoardController *boardController,
+                 StringTable *    stringTable);
 
     /**
      * @brief       Destructor.
@@ -45,4 +49,9 @@ class SerialWidget : public QWidget {
      * @brief       Closed slots.
      */
     void onClosed();
+
+    /**
+     * @brief       On update serial list.
+     */
+    void onUpdateSerialLists();
 };

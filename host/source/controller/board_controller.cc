@@ -11,11 +11,16 @@ BoardController::BoardController(QObject *parent) : QThread(parent) {}
 BoardController::~BoardController() {}
 
 /**
- * @brief       Get firmware mode.
+ * @brief       Update open status.
  */
-void BoardController::getMode(FirmwareMode *mode) {}
+void BoardController::updateOpenStatus() {}
+
+/**
+ * @brief       Update firmware mode.
+ */
+void BoardController::updatetFirmwareMode() {}
 
 /**
  * @brief       Set firmware mode.
  */
-void BoardController::SetMode(FirmwareMode mode) {}
+void BoardController::setFirmwareMode(FirmwareMode mode) {}

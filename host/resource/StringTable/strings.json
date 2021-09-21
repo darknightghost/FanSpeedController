@@ -11,16 +11,36 @@
 		"zh_CN" : "关闭(&C)",
 		"en_US" : "&Close"
 	},
+	"STR_BTN_REFRESH" : {
+		"zh_CN" : "刷新(&R)",
+		"en_US" : "&Refresh"
+	},
 	"STR_LABEL_SERIAL" : {
 		"zh_CN" : "串口 :",
 		"en_US" : "Serial :"
 	},
+	"STR_LABEL_FIRMWARE_MODE" : {
+		"zh_CN" : "固件模式 :",
+		"en_US" : "Firmware Mode :"
+	},
 	"STR_MESSAGE_INFO":{
-		"zh_CN" : "信息",
-		"en_US" : "Info"
+		"zh_CN" : "信息 : %1",
+		"en_US" : "Info  : %1"
 	},
 	"STR_MESSAGE_ERROR" : {
-		"zh_CN" : "错误",
-		"en_US" : "Error"
+		"zh_CN" : "错误 : %1",
+		"en_US" : "Error : %1"
+	},
+	"STR_FIRMWARE_MODE_NORMAL":{
+		"zh_CN" : "正常模式",
+		"en_US" : "Normal Mode"
+	},
+	"STR_FIRMWARE_MODE_MANUAL":{
+		"zh_CN" : "手动控制模式",
+		"en_US" : "Manual Mode"
+	},
+	"STR_FIRMWARE_MODE_TEST":{
+		"zh_CN" : "测试模式",
+		"en_US" : "Test Mode"
 	}
 }

@@ -1,15 +1,23 @@
 #pragma once
 
+#include <QtWidgets/QTabWidget>
 #include <QtWidgets/QWidget>
 
 #include <controller/board_controller.h>
 #include <locale/string_table.h>
+
+#include <view/message_widget.h>
+#include <view/serial_widget.h>
 
 class MainWindow : public QWidget {
     Q_OBJECT
   private:
     BoardController *m_boardController; ///< Board controller.
     StringTable *    m_stringTable;     ///< String table.
+
+    SerialWidget *m_serialWidget; ///< Serial widget.
+
+    MessageWidget *m_messageWidget; ///< Message widget.
 
   public:
     /**

@@ -5,7 +5,8 @@
 /**
  * @brief       Constructor.
  */
-MessageWidget::MessageWidget(QWidget *parent) : QWidget(parent)
+MessageWidget::MessageWidget(QWidget *parent, StringTable *stringTable) :
+    QWidget(parent), m_stringTable(stringTable)
 {
     QVBoxLayout *layout = new QVBoxLayout();
     this->setLayout(layout);
@@ -26,7 +27,8 @@ MessageWidget::~MessageWidget() {}
  */
 void MessageWidget::printInfo(QString message)
 {
-    m_textEdit->append(QString("INFO :").arg(message));
+    m_textEdit->append(
+        m_stringTable->getString("STR_MESSAGE_INFO").arg(message));
     this->m_textEdit->moveCursor(QTextCursor::End);
 }
 
@@ -35,6 +37,7 @@ void MessageWidget::printInfo(QString message)
  */
 void MessageWidget::printError(QString message)
 {
-    m_textEdit->append(QString("ERROR:").arg(message));
+    m_textEdit->append(
+        m_stringTable->getString("STR_MESSAGE_ERROR").arg(message));
     this->m_textEdit->moveCursor(QTextCursor::End);
 }
