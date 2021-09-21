@@ -7,7 +7,7 @@ cmake_policy(SET CMP0054 NEW)
 if (WIN32)
     # MSVC
     find_program (MSVC_EXECUTABLE
-        cl)
+        cl.exe)
 
     if (SDCC_EXECUTABLE)
         message (STATUS "MSVC found - ${MSVC_EXECUTABLE}")
