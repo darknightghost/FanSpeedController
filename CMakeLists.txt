@@ -33,11 +33,12 @@ file (MAKE_DIRECTORY        "${CMAKE_CURRENT_BINARY_DIR}/firmware")
 
 execute_process (
     COMMAND             "cmake" 
-                        "${CMAKE_CURRENT_SOURCE_DIR}/firmware"
+                        "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
                         "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" 
                         "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" 
                         "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
                         "-G" "${CMAKE_GENERATOR}"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/firmware"
     WORKING_DIRECTORY   "${CMAKE_CURRENT_BINARY_DIR}/firmware"
     RESULT_VARIABLE     result)
 
@@ -49,3 +50,27 @@ endif ()
 add_custom_target (firmware ALL
     COMMAND             "cmake" "--build" "."
     WORKING_DIRECTORY   "${CMAKE_CURRENT_BINARY_DIR}/firmware")
+
+# Host.
+message (NOTICE     "Configuring host...")
+file (MAKE_DIRECTORY        "${CMAKE_CURRENT_BINARY_DIR}/host")
+
+execute_process (
+    COMMAND             "cmake" 
+                        "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+                        "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" 
+                        "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" 
+                        "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+                        "-G" "${CMAKE_GENERATOR}"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/host"
+    WORKING_DIRECTORY   "${CMAKE_CURRENT_BINARY_DIR}/host"
+    RESULT_VARIABLE     result)
+
+if (NOT result EQUAL 0)
+    message (FATAL_ERROR    "Failed to configure host.")
+
+endif ()
+
+add_custom_target (host ALL
+    COMMAND             "cmake" "--build" "."
+    WORKING_DIRECTORY   "${CMAKE_CURRENT_BINARY_DIR}/host")
