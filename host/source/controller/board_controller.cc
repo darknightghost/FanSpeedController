@@ -42,14 +42,13 @@ void BoardController::open(QString name)
 
     // Open port.
     m_serialPort->setPortName(name);
+    m_serialPort->setBaudRate(QSerialPort::Baud9600,
+                              QSerialPort::AllDirections);
+    m_serialPort->setDataBits(QSerialPort::Data8);
+    m_serialPort->setFlowControl(QSerialPort::NoFlowControl);
+    m_serialPort->setParity(QSerialPort::NoParity);
+    m_serialPort->setStopBits(QSerialPort::OneStop);
     if (m_serialPort->open(QIODevice::ReadWrite)) {
-        m_serialPort->setBaudRate(QSerialPort::Baud9600,
-                                  QSerialPort::AllDirections);
-        m_serialPort->setDataBits(QSerialPort::Data8);
-        m_serialPort->setFlowControl(QSerialPort::NoFlowControl);
-        m_serialPort->setParity(QSerialPort::NoParity);
-        m_serialPort->setStopBits(QSerialPort::OneStop);
-
         qDebug() << "Port" << name << "opened.";
         emit this->printInfo(
             m_stringTable->getString("STR_MESSAGE_PORT_OPENED").arg(name));
