@@ -32,7 +32,9 @@ message (STATUS "Target System - ${CMAKE_SYSTEM_NAME}.")
 message (STATUS "Target Processor - ${CMAKE_SYSTEM_PROCESSOR}.")
 
 # Environment.
-include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include")
+include_directories (
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 add_definitions ("-DQIODEVICE_BUFFERSIZE=Q_INT64_C(64 * 1024 * 1024)")
 
 if (WIN32)
@@ -119,7 +121,7 @@ find_package (PythonInterp
     REQUIRED        3)
 
 find_package (Qt5       5.14.1  REQUIRED
-    COMPONENTS  Core Widgets Network Xml)
+    COMPONENTS  Core Widgets Network SerialPort)
 
 # Sources
 file (GLOB_RECURSE HEADERS
@@ -176,7 +178,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt5::Core
     Qt5::Widgets
     Qt5::Network
-    Qt5::Xml
+    Qt5::SerialPort
     )
 
 if (WIN32)

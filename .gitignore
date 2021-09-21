@@ -68,3 +68,4 @@ Makefile
 .build/*
 bin/*
 hex/*
+host/resource/resources.qrc

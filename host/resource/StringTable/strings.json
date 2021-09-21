@@ -1,0 +1,26 @@
+{
+	"STR_TITLE" : {
+		"zh_CN" : "风扇调速器",
+		"en_US" : "Fan Speed Controller"
+	},
+	"STR_BTN_OPEN" : {
+		"zh_CN" : "打开(&O)",
+		"en_US" : "&Open"
+	},
+	"STR_BTN_CLOSE" : {
+		"zh_CN" : "关闭(&C)",
+		"en_US" : "&Close"
+	},
+	"STR_LABEL_SERIAL" : {
+		"zh_CN" : "串口 :",
+		"en_US" : "Serial :"
+	},
+	"STR_MESSAGE_INFO":{
+		"zh_CN" : "信息",
+		"en_US" : "Info"
+	},
+	"STR_MESSAGE_ERROR" : {
+		"zh_CN" : "错误",
+		"en_US" : "Error"
+	}
+}
