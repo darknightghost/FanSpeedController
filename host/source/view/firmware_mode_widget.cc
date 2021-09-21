@@ -45,7 +45,7 @@ FirmwareModeWidget::FirmwareModeWidget(QWidget *        parent,
     layout->addWidget(label, 1, 0);
 
     m_txtCurrentMode = new QLineEdit();
-    layout->addWidget(label, 1, 1, 1, 2);
+    layout->addWidget(m_txtCurrentMode, 1, 1, 1, 2);
     m_txtCurrentMode->setReadOnly(true);
     m_txtCurrentMode->setEnabled(false);
 
