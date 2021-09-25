@@ -43,7 +43,7 @@ bool Serial::open(const QString &name)
             ::CloseHandle(*hnd);
         });
 
-    // Set serial attribute.
+    // Set serial attributes.
     DCB dcb;
     if (! ::GetCommState(hnd, &dcb)) {
         return false;
@@ -168,9 +168,12 @@ ssize_t Serial::write(const void *data, size_t size)
 void Serial::clearRead()
 {
     if (this->isOpened()) {
+        // Clear errors.
         DWORD   errors;
         COMSTAT stat;
         ::ClearCommError(m_nativeHandle, &errors, &stat);
+
+        // Clear read buffer.
         ::PurgeComm(m_nativeHandle, PURGE_RXCLEAR);
     }
 }
