@@ -1,15 +1,15 @@
 #pragma once
 
 #include <chrono>
-#include <string>
 #include <cstdint>
+#include <string>
 
 #include <QtCore/QString>
 
 #if defined(OS_WINDOWS)
     #include <Windows.h>
-    
-    typedef     int64_t     ssize_t;
+
+typedef int64_t ssize_t;
 
 #elif defined(OS_LINUX)
     #include <unistd.h>
