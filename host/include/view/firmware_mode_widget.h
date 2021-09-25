@@ -38,6 +38,19 @@ class FirmwareModeWidget : public QWidget {
      */
     virtual ~FirmwareModeWidget();
 
+  signals:
+    /**
+     * @brief       Update firmware mode.
+     */
+    void updateFirmwareMode();
+
+    /**
+     * @brief       Set firmware mode.
+     *
+     * @param[in]   ode        Mode to set.
+     */
+    void setFirmwareMode(FirmwareMode mode);
+
   private slots:
     /**
      * @brief       Opened slots.
@@ -59,5 +72,5 @@ class FirmwareModeWidget : public QWidget {
      *
      * @param[in]   mode    Firmware mode.
      */
-    void onFirmwareModeUpdated(BoardController::FirmwareMode mode);
+    void onFirmwareModeUpdated(FirmwareMode mode);
 };

@@ -39,6 +39,19 @@ class SerialWidget : public QWidget {
      */
     virtual ~SerialWidget();
 
+  signals:
+    /**
+     * @brief       Open serial.
+     *
+     * @param[in]   name        Name of the port.
+     */
+    void open(QString name);
+
+    /**
+     * @brief       Close serial.
+     */
+    void close();
+
   private slots:
     /**
      * @brief       Opened slots.

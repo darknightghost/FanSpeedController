@@ -19,6 +19,10 @@
 		"zh_CN" : "设置(&S)",
 		"en_US" : "&Set"
 	},
+	"STR_BTN_CLEAR" : {
+		"zh_CN" : "清空(&E)",
+		"en_US" : "Cl&ear"
+	},
 	"STR_LABEL_SERIAL" : {
 		"zh_CN" : "串口 :",
 		"en_US" : "Serial :"
@@ -32,12 +36,12 @@
 		"en_US" : "Current Firmware Mode :"
 	},
 	"STR_MESSAGE_INFO":{
-		"zh_CN" : "信息 : %1",
-		"en_US" : "Info  : %1"
+		"zh_CN" : "%1 信息 : %2",
+		"en_US" : "%1 Info  : %2"
 	},
 	"STR_MESSAGE_ERROR" : {
-		"zh_CN" : "错误 : %1",
-		"en_US" : "Error : %1"
+		"zh_CN" : "%1 错误 : %2",
+		"en_US" : "%1 Error : %2"
 	},
 	"STR_MESSAGE_PORT_OPENED":{
 		"zh_CN" : "打开串口\"%1\"成功.",

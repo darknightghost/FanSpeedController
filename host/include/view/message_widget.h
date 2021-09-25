@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QtCore/QDateTime>
 #include <QtWidgets/QTextEdit>
 
 #include <locale/string_table.h>
@@ -31,16 +32,23 @@ class MessageWidget : public QWidget {
 
   public slots:
     /**
+     * @brief       On button clear clicked.
+     */
+    void onBtnClearClicked();
+
+    /**
      * @brief       Print info message.
      *
+     * @param[in]   time        Current time.
      * @param[in]   message     Message.
      */
-    void onPrintInfo(QString message);
+    void onPrintInfo(QDateTime time, QString message);
 
     /**
      * @brief       Print error message.
      *
+     * @param[in]   time        Current time.
      * @param[in]   message     Message.
      */
-    void onPrintError(QString message);
+    void onPrintError(QDateTime time, QString message);
 };

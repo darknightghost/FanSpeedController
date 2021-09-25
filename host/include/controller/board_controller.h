@@ -2,6 +2,7 @@
 
 #include <chrono>
 
+#include <QtCore/QDateTime>
 #include <QtCore/QMetaEnum>
 #include <QtCore/QThread>
 #include <QtSerialPort/QSerialPort>
@@ -18,13 +19,8 @@ class BoardController : public QThread {
     Q_OBJECT;
 
   public:
-    using FirmwareMode = ::FirmwareMode;
     Q_ENUM(FirmwareMode);
-
-    using ReadablePort = ::ReadablePort;
     Q_ENUM(ReadablePort);
-
-    using WritablePort = ::WritablePort;
     Q_ENUM(WritablePort);
 
   private:
@@ -59,16 +55,18 @@ class BoardController : public QThread {
     /**
      * @brief       Infomation signal.
      *
+     * @param[in]   time        Current time.
      * @param[in]   message     Message.
      */
-    void printInfo(QString message);
+    void printInfo(QDateTime time, QString message);
 
     /**
      * @brief       Error signal.
      *
+     * @param[in]   time        Current time.
      * @param[in]   message     Error message.
      */
-    void printError(QString message);
+    void printError(QDateTime time, QString message);
 
     /**
      * @brief       Firmware mode signal.

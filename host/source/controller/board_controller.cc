@@ -1,4 +1,5 @@
 #include <QtCore/QDebug>
+#include <QtCore/QMetaType>
 
 #include <controller/board_controller.h>
 
@@ -8,6 +9,9 @@
 BoardController::BoardController(StringTable *stringTable) :
     QThread(nullptr), m_stringTable(stringTable)
 {
+    qRegisterMetaType<FirmwareMode>("FirmwareMode");
+    qRegisterMetaType<ReadablePort>("ReadablePort");
+    qRegisterMetaType<WritablePort>("WritablePort");
     this->moveToThread(this);
 }
 
@@ -29,11 +33,13 @@ void BoardController::open(QString name)
     if (m_serialPort.open(name)) {
         qDebug() << "Port" << name << "opened.";
         emit this->printInfo(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_PORT_OPENED").arg(name));
         this->updateOpenStatus();
     } else {
         qDebug() << "Failed to open port" << name << ".";
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_PORT_OPEN_FAILED").arg(name));
         m_serialPort.close();
         this->updateOpenStatus();
@@ -50,6 +56,7 @@ void BoardController::close()
         m_serialPort.clearRead();
         m_serialPort.close();
         emit this->printInfo(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_PORT_CLOSED").arg(name));
         this->updateOpenStatus();
     }
@@ -74,6 +81,7 @@ void BoardController::updateFirmwareMode()
 {
     if (! m_serialPort.isOpened()) {
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
         return;
     }
@@ -88,13 +96,16 @@ void BoardController::updateFirmwareMode()
                           sizeof(command))
         < 0) {
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_COMMAND_SEND_FAILED"));
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
         return;
     }
 
     emit this->printInfo(
+        QDateTime::currentDateTime(),
         m_stringTable->getString("STR_MESSAGE_COMMAND_SEND")
             .arg(QString::fromUtf8(
                 QByteArray(reinterpret_cast<char *>(&command), sizeof(command))
@@ -108,8 +119,10 @@ void BoardController::updateFirmwareMode()
     // Receive first byte.
     if (this->receiveReply(pReply, sizeof(uint8_t)) < 0) {
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
         return;
     }
@@ -119,6 +132,7 @@ void BoardController::updateFirmwareMode()
 
         case ReplyType::Failed:
             emit this->printInfo(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_REPLY")
                     .arg(QString::fromUtf8(
                         QByteArray(reinterpret_cast<char *>(pReply),
@@ -126,13 +140,16 @@ void BoardController::updateFirmwareMode()
                             .toHex(' ')
                             .toUpper())));
             emit this->printError(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
             return;
 
         default:
             emit this->printError(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_REPLY_PARSE_ERROR"));
             emit this->printError(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
             return;
     }
@@ -140,13 +157,16 @@ void BoardController::updateFirmwareMode()
     // Receive remaining data,
     if (this->receiveReply(pReply + 1, sizeof(reply) - sizeof(uint8_t)) < 0) {
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
         return;
     }
 
     emit this->printInfo(
+        QDateTime::currentDateTime(),
         m_stringTable->getString("STR_MESSAGE_REPLY")
             .arg(QString::fromUtf8(
                 QByteArray(reinterpret_cast<char *>(&reply), sizeof(reply))
@@ -157,15 +177,18 @@ void BoardController::updateFirmwareMode()
         case FirmwareMode::Normal:
         case FirmwareMode::Manual:
         case FirmwareMode::Test:
-            emit this->printError(
+            emit this->printInfo(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_SUCCEED"));
             emit this->firmwareModeUpdated(reply.mode);
             return;
 
         default:
             emit this->printError(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_REPLY_PARSE_ERROR"));
             emit this->printError(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
             return;
     }
@@ -178,6 +201,7 @@ void BoardController::setFirmwareMode(FirmwareMode mode)
 {
     if (! m_serialPort.isOpened()) {
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
         return;
     }
@@ -193,13 +217,16 @@ void BoardController::setFirmwareMode(FirmwareMode mode)
                           sizeof(command))
         < 0) {
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_COMMAND_SEND_FAILED"));
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
         return;
     }
 
     emit this->printInfo(
+        QDateTime::currentDateTime(),
         m_stringTable->getString("STR_MESSAGE_COMMAND_SEND")
             .arg(QString::fromUtf8(
                 QByteArray(reinterpret_cast<char *>(&command), sizeof(command))
@@ -213,13 +240,16 @@ void BoardController::setFirmwareMode(FirmwareMode mode)
     // Receive first byte.
     if (this->receiveReply(pReply, sizeof(reply)) < 0) {
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
         emit this->printError(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
         return;
     }
 
     emit this->printInfo(
+        QDateTime::currentDateTime(),
         m_stringTable->getString("STR_MESSAGE_REPLY")
             .arg(QString::fromUtf8(
                 QByteArray(reinterpret_cast<char *>(&reply), sizeof(reply))
@@ -228,19 +258,23 @@ void BoardController::setFirmwareMode(FirmwareMode mode)
 
     switch (reply.header.replyType) {
         case ReplyType::Success:
-            emit this->printError(
+            emit this->printInfo(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_SUCCEED"));
             break;
 
         case ReplyType::Failed:
             emit this->printError(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
             return;
 
         default:
             emit this->printError(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_REPLY_PARSE_ERROR"));
             emit this->printError(
+                QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
             return;
     }
@@ -271,10 +305,12 @@ qint64 BoardController::receiveReply(uint8_t *data, size_t size)
 
     if (received < 0) {
         emit this->printInfo(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
         return -1;
     } else if (static_cast<size_t>(received) < size) {
         emit this->printInfo(
+            QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_REPLY_OUT_OF_TIME"));
         return -1;
     }

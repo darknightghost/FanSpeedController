@@ -27,12 +27,12 @@ FirmwareModeWidget::FirmwareModeWidget(QWidget *        parent,
         {m_stringTable->getString("STR_FIRMWARE_MODE_NORMAL"),
          m_stringTable->getString("STR_FIRMWARE_MODE_MANUAL"),
          m_stringTable->getString("STR_FIRMWARE_MODE_TEST")});
-    m_comboFirmwareMode->setItemData(
-        0, static_cast<quint8>(BoardController::FirmwareMode::Normal));
-    m_comboFirmwareMode->setItemData(
-        1, static_cast<quint8>(BoardController::FirmwareMode::Manual));
-    m_comboFirmwareMode->setItemData(
-        2, static_cast<quint8>(BoardController::FirmwareMode::Test));
+    m_comboFirmwareMode->setItemData(0,
+                                     static_cast<quint8>(FirmwareMode::Normal));
+    m_comboFirmwareMode->setItemData(1,
+                                     static_cast<quint8>(FirmwareMode::Manual));
+    m_comboFirmwareMode->setItemData(2,
+                                     static_cast<quint8>(FirmwareMode::Test));
     m_comboFirmwareMode->setCurrentIndex(0);
     m_comboFirmwareMode->setEnabled(false);
 
@@ -57,11 +57,17 @@ FirmwareModeWidget::FirmwareModeWidget(QWidget *        parent,
 
     // Connect signals.
     this->connect(m_boardController, &BoardController::opened, this,
-                  &FirmwareModeWidget::onOpened);
+                  &FirmwareModeWidget::onOpened, Qt::QueuedConnection);
     this->connect(m_boardController, &BoardController::closed, this,
-                  &FirmwareModeWidget::onClosed);
+                  &FirmwareModeWidget::onClosed, Qt::QueuedConnection);
     this->connect(m_boardController, &BoardController::firmwareModeUpdated,
-                  this, &FirmwareModeWidget::onFirmwareModeUpdated);
+                  this, &FirmwareModeWidget::onFirmwareModeUpdated,
+                  Qt::QueuedConnection);
+    this->connect(this, &FirmwareModeWidget::updateFirmwareMode,
+                  m_boardController, &BoardController::updateFirmwareMode,
+                  Qt::QueuedConnection);
+    this->connect(this, &FirmwareModeWidget::setFirmwareMode, m_boardController,
+                  &BoardController::setFirmwareMode, Qt::QueuedConnection);
 }
 
 /**
@@ -77,8 +83,7 @@ void FirmwareModeWidget::onOpened()
     m_comboFirmwareMode->setEnabled(true);
     m_btnSet->setEnabled(true);
     m_txtCurrentMode->setEnabled(true);
-    QMetaObject::invokeMethod(m_boardController, "updateFirmwareMode",
-                              Qt::ConnectionType::QueuedConnection);
+    emit this->updateFirmwareMode();
 }
 
 /**
@@ -97,35 +102,28 @@ void FirmwareModeWidget::onClosed()
  */
 void FirmwareModeWidget::onBtnSetClicked()
 {
-    QMetaObject::invokeMethod(
-        m_boardController, "setFirmwareMode",
-        Qt::ConnectionType::QueuedConnection,
-        Q_ARG(BoardController::FirmwareMode,
-              static_cast<BoardController::FirmwareMode>(
-                  m_comboFirmwareMode->currentData().toUInt())));
-
-    QMetaObject::invokeMethod(m_boardController, "updateFirmwareMode",
-                              Qt::ConnectionType::QueuedConnection);
+    emit this->setFirmwareMode(
+        static_cast<FirmwareMode>(m_comboFirmwareMode->currentData().toUInt()));
+    emit this->updateFirmwareMode();
 }
 
 /**
  * @brief       Firmware mode updated.
  */
-void FirmwareModeWidget::onFirmwareModeUpdated(
-    BoardController::FirmwareMode mode)
+void FirmwareModeWidget::onFirmwareModeUpdated(FirmwareMode mode)
 {
     switch (mode) {
-        case BoardController::FirmwareMode::Normal:
+        case FirmwareMode::Normal:
             m_txtCurrentMode->setText(
                 m_stringTable->getString("STR_FIRMWARE_MODE_NORMAL"));
             break;
 
-        case BoardController::FirmwareMode::Manual:
+        case FirmwareMode::Manual:
             m_txtCurrentMode->setText(
                 m_stringTable->getString("STR_FIRMWARE_MODE_MANUAL"));
             break;
 
-        case BoardController::FirmwareMode::Test:
+        case FirmwareMode::Test:
             m_txtCurrentMode->setText(
                 m_stringTable->getString("STR_FIRMWARE_MODE_TEST"));
             break;

@@ -1,5 +1,7 @@
 #include <memory>
 
+#include <QtCore/QDebug>
+
 #include <serial/serial.h>
 
 #if defined(OS_WINDOWS)
@@ -84,7 +86,7 @@ bool Serial::open(const QString &name)
     }
 
     // Open.
-    int fd = ::open(name.toUtf8(), O_RDWR | O_NOCTTY | O_NDELAY);
+    int fd = ::open(QString("/dev/%1").arg(name).toUtf8(), O_RDWR | O_NOCTTY);
     if (fd < 0) {
         return false;
     }
@@ -97,6 +99,8 @@ bool Serial::open(const QString &name)
     ::cfmakeraw(&termOptions);
     ::cfsetispeed(&termOptions, B9600);
     ::cfsetospeed(&termOptions, B9600);
+    termOptions.c_cc[VTIME] = 0;
+    termOptions.c_cc[VMIN]  = 1;
     if (::tcsetattr(fd, TCSANOW, &termOptions) < 0) {
         return false;
     }
@@ -152,6 +156,10 @@ ssize_t
         timeToWait.tv_usec = timeout.count() % 1000 * 1000;
 
         if (::select(1, &readFds, nullptr, nullptr, &timeToWait) < 0) {
+            char errBuf[256];
+            int  err = errno;
+            qWarning() << "Select failed with errno " << err << " : "
+                       << ::strerror_r(err, errBuf, sizeof(errBuf)) << ".";
             if (errno == ETIMEDOUT) {
                 return static_cast<ssize_t>(sizeRead);
             } else {
@@ -162,6 +170,10 @@ ssize_t
         // Read.
         ssize_t readRet = ::read(m_nativeHandle, p + sizeRead, size - sizeRead);
         if (readRet < 0) {
+            char errBuf[256];
+            int  err = errno;
+            qWarning() << "Read failed with errno " << err << " : "
+                       << ::strerror_r(err, errBuf, sizeof(errBuf)) << ".";
             return -1;
         } else {
             sizeRead += static_cast<size_t>(readRet);
@@ -186,6 +198,10 @@ ssize_t Serial::write(const void *data, size_t size)
         ssize_t ret
             = ::write(m_nativeHandle, p + sizeWritten, size - sizeWritten);
         if (ret < 0) {
+            char errBuf[256];
+            int  err = errno;
+            qWarning() << "Write failed with errno " << err << " : "
+                       << ::strerror_r(err, errBuf, sizeof(errBuf)) << ".";
             return -1;
         }
 

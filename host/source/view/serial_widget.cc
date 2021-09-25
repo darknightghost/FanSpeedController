@@ -46,6 +46,11 @@ SerialWidget::SerialWidget(QWidget *        parent,
                   &SerialWidget::onOpened);
     this->connect(m_boardController, &BoardController::closed, this,
                   &SerialWidget::onClosed);
+
+    this->connect(this, &SerialWidget::open, m_boardController,
+                  &BoardController::open, Qt::QueuedConnection);
+    this->connect(this, &SerialWidget::close, m_boardController,
+                  &BoardController::close, Qt::QueuedConnection);
 }
 
 /**
@@ -86,9 +91,7 @@ void SerialWidget::onBtnOpenClicked()
 {
     m_btnOpenClose->setEnabled(false);
     m_btnRefresh->setEnabled(false);
-    QMetaObject::invokeMethod(m_boardController, "open",
-                              Qt::ConnectionType::QueuedConnection,
-                              Q_ARG(QString, m_comboSerial->currentText()));
+    emit this->open(m_comboSerial->currentText());
 }
 
 /**
@@ -98,8 +101,7 @@ void SerialWidget::onBtnCloseClicked()
 {
     m_btnOpenClose->setEnabled(false);
     m_btnRefresh->setEnabled(false);
-    QMetaObject::invokeMethod(m_boardController, "close",
-                              Qt::ConnectionType::QueuedConnection);
+    emit this->close();
 }
 
 /**
