@@ -5,52 +5,199 @@
 #include <serial/serial.h>
 
 #if defined(OS_WINDOWS)
+
+#include <Windows.h>
+
 /**
  * @brief       Constructor.
  */
-Serial::Serial() {}
+Serial::Serial() : m_name(""), m_nativeHandle(INVALID_HANDLE_VALUE) {
+    
+}
 
 /**
  * @brief       Check opened.
  */
-bool Serial::isOpened() const {}
+bool Serial::isOpened() const {
+    return m_nativeHandle != INVALID_HANDLE_VALUE;
+}
 
 /**
  * @brief       Open serial.
  */
-bool Serial::open(const QString &name) {}
+bool Serial::open(const QString &name) {
+    if (isOpened()) {
+        return false;
+    }
+    
+    // Open serial.
+    HANDLE hnd = ::CreateFileW(
+        name.toStdWString().c_str(),
+        GENERIC_READ | GENERIC_WRITE,
+        0,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
+        
+    if (hnd == INVALID_HANDLE_VALUE){
+        return false;
+    }
+    ::std::unique_ptr<HANDLE, void (*)(HANDLE *)> autoClose(&hnd, [](HANDLE *hnd) -> void {
+        ::CloseHandle(*hnd);
+    });
+    
+    // Set serial attribute.
+    DCB dcb;
+    if (! ::GetCommState(hnd, &dcb)) {
+        return false;
+    }
+    dcb.BaudRate =CBR_9600;
+    dcb.fBinary = TRUE;
+    dcb.fParity = FALSE;
+    dcb.fOutxCtsFlow = FALSE;
+    dcb.fOutxDsrFlow = FALSE;
+    dcb.fDtrControl = DTR_CONTROL_DISABLE;
+    dcb.fDsrSensitivity = FALSE;
+    dcb.fTXContinueOnXoff = FALSE;
+    dcb.fOutX = FALSE;
+    dcb.fInX = FALSE;
+    dcb.fErrorChar = FALSE;
+    dcb.fRtsControl=RTS_CONTROL_DISABLE;
+    dcb.fAbortOnError =FALSE;
+    dcb.ByteSize = 8;
+    dcb.Parity=NOPARITY;
+    dcb.StopBits = ONESTOPBIT;
+    
+    if (! ::SetCommState(hnd, &dcb)) {
+        return false;
+    }
+    
+    autoClose.release();
+    m_nativeHandle = hnd;
+    m_name = name;
+    
+    return true;
+}
 
 /**
  * @nrief       Get device name.
  */
-const QString &Serial::name() const {}
+const QString &Serial::name() const {
+    return m_name;
+}
 
 /**
  * @brief       Close the device.
  */
-void Serial::close() {}
+void Serial::close() {
+    if (this->isOpened()){
+        ::CloseHandle(m_nativeHandle);
+        m_nativeHandle = INVALID_HANDLE_VALUE;
+        m_name="";
+    }
+}
 
 /**
  * @brief       Read bytes.
  */
 ssize_t
     Serial::read(void *buffer, size_t size, ::std::chrono::milliseconds timeout)
-{}
+{
+    if (!isOpened()) {
+        return -1;
+    }
+    
+    // Set timeout.
+    COMMTIMEOUTS commTimeouts;
+    if (! ::GetCommTimeouts(m_nativeHandle, &commTimeouts)){
+        return -1;
+    }
+    commTimeouts.ReadIntervalTimeout = timeout.count();
+    if (! ::SetCommTimeouts(m_nativeHandle, &commTimeouts)){
+        return -1;
+    }
+    
+    // Read.
+    uint8_t* p = reinterpret_cast<uint8_t*>(buffer);
+    DWORD sizeToRead = static_cast<DWORD>(size);
+    DWORD sizeRead = 0;
+    while (sizeRead < sizeToRead){
+        DWORD sz=0;
+        if (! ::ReadFile(
+            m_nativeHandle,
+            p + sizeRead,
+            sizeToRead - sizeRead,
+            &sz,
+            nullptr)){
+            return -1;
+        }
+        if (sz == 0){
+            return static_cast<ssize_t>(sizeRead);;
+        }else{
+            sizeRead += sz;
+            
+        }
+    }
+    
+    return static_cast<ssize_t>(sizeRead);
+}
 
 /**
  * @brief       Write bytes.
  */
-ssize_t Serial::write(void *data, size_t size) {}
+ssize_t Serial::write(const void *data, size_t size) {
+    if (!isOpened()) {
+        return -1;
+    }
+    
+    DWORD sizeWritten = 0;
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(data);
+    DWORD sizeToWrite = static_cast<DWORD>(size);
+    while (sizeWritten < sizeToWrite) {
+        DWORD written = 0;
+        if (! ::WriteFile(
+            m_nativeHandle,
+            p+sizeWritten,
+            sizeToWrite - sizeWritten,
+            &written,
+            nullptr)){
+            return -1;
+        }
+            
+        sizeWritten +=  written;
+    }
+    
+    return 0;
+}
 
 /**
  * @brief       Discard data in read buffer.
  */
-void Serial::clearRead() {}
+void Serial::clearRead() {
+
+    if (this->isOpened()){
+        DWORD errors;
+        COMSTAT stat;
+        ::ClearCommError(
+          m_nativeHandle,
+          &errors,
+          &stat
+        );
+        ::PurgeComm(m_nativeHandle, PURGE_RXCLEAR);
+    }
+}
 
 /**
  * @brief       Destructor.
  */
-Serial::~Serial() {}
+Serial::~Serial() {
+    if (this->isOpened()){
+        ::CloseHandle(m_nativeHandle);
+        m_nativeHandle = INVALID_HANDLE_VALUE;
+        m_name="";
+    }
+}
 
 #elif defined(OS_LINUX)
 

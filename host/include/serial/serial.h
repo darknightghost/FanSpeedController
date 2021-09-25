@@ -2,11 +2,14 @@
 
 #include <chrono>
 #include <string>
+#include <cstdint>
 
 #include <QtCore/QString>
 
 #if defined(OS_WINDOWS)
-    #include <windows.h>
+    #include <Windows.h>
+    
+    typedef     int64_t     ssize_t;
 
 #elif defined(OS_LINUX)
     #include <unistd.h>
