@@ -9,6 +9,7 @@
 #include <command.h>
 
 #include <locale/string_table.h>
+#include <serial/serial.h>
 
 /**
  * @brief       Board controller.
@@ -29,8 +30,7 @@ class BoardController : public QThread {
   private:
     StringTable *m_stringTable; ///< String table.
 
-    QThread *    m_serialThread; ///< Serial thread.
-    QSerialPort *m_serialPort;   ///< Serial port.
+    Serial m_serialPort; ///< Serial port.
 
   public:
     /**
@@ -78,11 +78,6 @@ class BoardController : public QThread {
     void firmwareModeUpdated(FirmwareMode mode);
 
   public slots:
-    /**
-     * @brief       Quit.
-     */
-    void quit();
-
     /**
      * @brief       Open serial.
      *

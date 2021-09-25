@@ -6,49 +6,27 @@
  * @brief       Constructor.
  */
 BoardController::BoardController(StringTable *stringTable) :
-    QThread(nullptr), m_stringTable(stringTable), m_serialThread(this),
-    m_serialPort(new QSerialPort(nullptr))
+    QThread(nullptr), m_stringTable(stringTable)
 {
     this->moveToThread(this);
-    m_serialThread->start();
-    m_serialPort->moveToThread(m_serialThread);
 }
 
 /**
  * @brief       Destructor.
  */
-BoardController::~BoardController()
-{
-    delete m_serialPort;
-}
-
-/**
- * @brief       Quit.
- */
-void BoardController::quit()
-{
-    m_serialThread->quit();
-    this->QThread::quit();
-}
+BoardController::~BoardController() {}
 
 /**
  * @brief       Open serial.
  */
 void BoardController::open(QString name)
 {
-    if (m_serialPort->isOpen()) {
-        m_serialPort->close();
+    if (m_serialPort.isOpened()) {
+        m_serialPort.close();
     }
 
     // Open port.
-    m_serialPort->setPortName(name);
-    m_serialPort->setBaudRate(QSerialPort::Baud9600,
-                              QSerialPort::AllDirections);
-    m_serialPort->setDataBits(QSerialPort::Data8);
-    m_serialPort->setFlowControl(QSerialPort::NoFlowControl);
-    m_serialPort->setParity(QSerialPort::NoParity);
-    m_serialPort->setStopBits(QSerialPort::OneStop);
-    if (m_serialPort->open(QIODevice::ReadWrite)) {
+    if (m_serialPort.open(name)) {
         qDebug() << "Port" << name << "opened.";
         emit this->printInfo(
             m_stringTable->getString("STR_MESSAGE_PORT_OPENED").arg(name));
@@ -57,8 +35,7 @@ void BoardController::open(QString name)
         qDebug() << "Failed to open port" << name << ".";
         emit this->printError(
             m_stringTable->getString("STR_MESSAGE_PORT_OPEN_FAILED").arg(name));
-        m_serialPort->clear();
-        m_serialPort->close();
+        m_serialPort.close();
         this->updateOpenStatus();
     }
 }
@@ -68,10 +45,10 @@ void BoardController::open(QString name)
  */
 void BoardController::close()
 {
-    if (m_serialPort->isOpen()) {
-        QString name = m_serialPort->portName();
-        m_serialPort->clear();
-        m_serialPort->close();
+    if (m_serialPort.isOpened()) {
+        QString name = m_serialPort.name();
+        m_serialPort.clearRead();
+        m_serialPort.close();
         emit this->printInfo(
             m_stringTable->getString("STR_MESSAGE_PORT_CLOSED").arg(name));
         this->updateOpenStatus();
@@ -83,7 +60,7 @@ void BoardController::close()
  */
 void BoardController::updateOpenStatus()
 {
-    if (m_serialPort->isOpen()) {
+    if (m_serialPort.isOpened()) {
         emit this->opened();
     } else {
         emit this->closed();
@@ -95,12 +72,12 @@ void BoardController::updateOpenStatus()
  */
 void BoardController::updateFirmwareMode()
 {
-    if (! m_serialPort->isOpen()) {
+    if (! m_serialPort.isOpened()) {
         emit this->printError(
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
         return;
     }
-    m_serialPort->clear();
+    m_serialPort.clearRead();
 
     // Send command.
     CMDGetMode command;
@@ -199,12 +176,12 @@ void BoardController::updateFirmwareMode()
  */
 void BoardController::setFirmwareMode(FirmwareMode mode)
 {
-    if (! m_serialPort->isOpen()) {
+    if (! m_serialPort.isOpened()) {
         emit this->printError(
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
         return;
     }
-    m_serialPort->clear();
+    m_serialPort.clearRead();
 
     // Send command.
     CMDSetMode command;
@@ -275,16 +252,9 @@ void BoardController::setFirmwareMode(FirmwareMode mode)
 qint64 BoardController::sendCommand(const uint8_t *data, size_t size)
 {
     // Send data.
-    qint64 ret = 0;
-    while (ret < static_cast<qint64>(size)) {
-        qint64 sizeWritten = m_serialPort->write(
-            reinterpret_cast<const char *>(data + ret), size - ret);
-        if (sizeWritten > 0) {
-            ret += sizeWritten;
-
-        } else {
-            return -1;
-        }
+    ssize_t ret = m_serialPort.write(data, size);
+    if (ret < 0) {
+        return -1;
     }
 
     return ret;
@@ -296,24 +266,18 @@ qint64 BoardController::sendCommand(const uint8_t *data, size_t size)
 qint64 BoardController::receiveReply(uint8_t *data, size_t size)
 {
     // Receive data.
-    qint64 received = 0;
-    while (received < static_cast<qint64>(size)) {
-        if (! m_serialPort->waitForReadyRead(10000)) {
-            emit this->printInfo(
-                m_stringTable->getString("STR_MESSAGE_REPLY_OUT_OF_TIME"));
-            return -1;
-        }
-        qint64 sizeRead = m_serialPort->read(
-            reinterpret_cast<char *>(data + received), size - received);
-        if (sizeRead < 0) {
-            emit this->printInfo(
-                m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
-            return -1;
-        } else {
-            received += sizeRead;
-        }
+    ssize_t received
+        = m_serialPort.read(data, size, ::std::chrono::milliseconds(1000));
+
+    if (received < 0) {
+        emit this->printInfo(
+            m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
+        return -1;
+    } else if (static_cast<size_t>(received) < size) {
+        emit this->printInfo(
+            m_stringTable->getString("STR_MESSAGE_REPLY_OUT_OF_TIME"));
+        return -1;
     }
-    m_serialPort->flush();
 
     return received;
 }
