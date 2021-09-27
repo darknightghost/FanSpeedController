@@ -1,11 +1,12 @@
 #include <eeprom.h>
 #include <platform.h>
 
+#define GROUP_NUM ((512 / RECORD_SIZE / 8) * 8)
 /**
  * @brief       header.
  */
 struct record_allocation_table {
-    uint8_t bitmap[2 * 8];
+    uint8_t bitmap[GROUP_NUM];
     uint8_t err;
 };
 
@@ -203,14 +204,14 @@ static inline int8_t eeprom_format()
 uint16_t get_read_addr()
 {
     uint8_t group_count = 0;
-    for (; group_count < 16; ++group_count) {
+    for (; group_count < GROUP_NUM; ++group_count) {
         if (rat.bitmap[group_count] != 0x00) {
             break;
         }
     }
 
-    if (group_count == 16) {
-        return (8 * 16 - 1) * RECORD_SIZE;
+    if (group_count == GROUP_NUM) {
+        return (8 * GROUP_NUM - 1) * RECORD_SIZE;
     }
 
     switch (rat.bitmap[group_count]) {
@@ -252,13 +253,13 @@ uint16_t get_read_addr()
 uint16_t allocate_write_addr()
 {
     uint8_t group_count = 0;
-    for (; group_count < 16; ++group_count) {
+    for (; group_count < GROUP_NUM; ++group_count) {
         if (rat.bitmap[group_count] != 0x00) {
             break;
         }
     }
 
-    if (group_count == 16) {
+    if (group_count == GROUP_NUM) {
         eeprom_format();
         // Write RAT.
         rat.bitmap[0] = 0xFC;
@@ -367,11 +368,11 @@ void eeprom_init()
 
         // Make default record.
         __xdata struct config_record default_record;
-        for (uint8_t i = 0; i < 20; ++i) {
-            default_record.pwm_map[i] = 100;
+        for (uint8_t i = 0; i < 10; ++i) {
+            default_record.config.pwmMap[i]          = 100;
+            default_record.config.speedMap[i].source = 2000 * 2 * i / 60;
+            default_record.config.speedMap[i].dest   = 2000 * 2 * i / 60;
         }
-        default_record.sourceFullSpeed = 1000;
-        default_record.targetFullSpeed = 1000;
 
         // Write record.
         eeprom_write_record(&default_record);

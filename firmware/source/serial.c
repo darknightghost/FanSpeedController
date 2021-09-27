@@ -189,24 +189,14 @@ static inline void cmd_read_speed() {}
 static inline void cmd_set_pwm() {}
 
 /**
- * @brief       Read current speed map.
+ * @brief       Read config.
  */
-static inline void cmd_read_speed_map() {}
+static inline void cmd_read_config() {}
 
 /**
- * @brief       Write current speed map.
+ * @brief       Write config.
  */
-static inline void cmd_write_speed_maps() {}
-
-/**
- * @brief       Read current pwm map.
- */
-static inline void cmd_read_pwm_map() {}
-
-/**
- * @brief       Write current pwm map.
- */
-static inline void cmd_write_pwm_maps() {}
+static inline void cmd_write_config() {}
 
 /**
  * @brief       Read clock.
@@ -277,20 +267,12 @@ _PARSE_CMD:
             goto _PARSE_CMD_SET_PWM;
         }
 
-        case CMD_TYPE_READ_SPEED_MAP: {
-            goto _PARSE_CMD_READ_SPEED_MAP;
+        case CMD_TYPE_READ_CONFIG: {
+            goto _PARSE_CMD_READ_CONFIG;
         }
 
-        case CMD_TYPE_WRITE_SPEED_MAP: {
-            goto _PARSE_CMD_WRITE_SPEED_MAP;
-        }
-
-        case CMD_TYPE_READ_PWM_MAP: {
-            goto _PARSE_CMD_READ_PWM_MAP;
-        }
-
-        case CMD_TYPE_WRITE_PWM_MAP: {
-            goto _PARSE_CMD_WRITE_PWM_MAP;
+        case CMD_TYPE_WRITE_CONFIG: {
+            goto _PARSE_CMD_WRITE_CONFIG;
         }
 
         case CMD_TYPE_READ_CLOCK: {
@@ -428,22 +410,12 @@ _PARSE_CMD_SET_PWM : {
     return;
 }
 
-_PARSE_CMD_READ_SPEED_MAP : {
+_PARSE_CMD_READ_CONFIG : {
     serial_write_byte(REPLY_TYPE_FAILED);
     return;
 }
 
-_PARSE_CMD_WRITE_SPEED_MAP : {
-    serial_write_byte(REPLY_TYPE_FAILED);
-    return;
-}
-
-_PARSE_CMD_READ_PWM_MAP : {
-    serial_write_byte(REPLY_TYPE_FAILED);
-    return;
-}
-
-_PARSE_CMD_WRITE_PWM_MAP : {
+_PARSE_CMD_WRITE_CONFIG : {
     serial_write_byte(REPLY_TYPE_FAILED);
     return;
 }
