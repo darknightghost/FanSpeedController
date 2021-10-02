@@ -61,24 +61,27 @@ add_link_options (
     --nostdlib
     )
 
-add_custom_command (
-    DEPENDS     "${PROJECT_NAME}"
-    OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
-    COMMAND     "bash" "-c" "packihx \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx\" >\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex\""
-    )
+if (UNIX)
+    add_custom_command (
+        DEPENDS     "${PROJECT_NAME}"
+        OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
+        COMMAND     "bash" "-c" "packihx \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx\" >\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex\""
+        )
 
-add_custom_command (
-    DEPENDS     "${PROJECT_NAME}"
-    OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
-    COMMAND     "bash" "-c" "sdobjcopy -I ihex -O binary \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin\""
-    )
+    add_custom_command (
+        DEPENDS     "${PROJECT_NAME}"
+        OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
+        COMMAND     "bash" "-c" "sdobjcopy -I ihex -O binary \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin\""
+        )
 
-add_custom_target (
-    "${PROJECT_NAME}.hex"   ALL
-    DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
-    )
+    add_custom_target (
+        "${PROJECT_NAME}.hex"   ALL
+        DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
+        )
 
-add_custom_target (
-    "${PROJECT_NAME}.bin"   ALL
-    DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
-    )
+    add_custom_target (
+        "${PROJECT_NAME}.bin"   ALL
+        DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
+        )
+
+endif ()
