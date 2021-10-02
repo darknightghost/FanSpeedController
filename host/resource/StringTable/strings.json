@@ -23,6 +23,22 @@
 		"zh_CN" : "清空(&E)",
 		"en_US" : "Cl&ear"
 	},
+	"STR_BTN_START_READING_FAN_SPEED" : {
+		"zh_CN" : "开始读取风扇转速(&F)",
+		"en_US" : "Start Reading &Fan Speed"
+	},
+	"STR_BTN_STOP_READING_FAN_SPEED" : {
+		"zh_CN" : "停止读取风扇转速(&F)",
+		"en_US" : "Stop Reading &Fan Speed"
+	},
+	"STR_BTN_START_READING_BOOT_TIME" : {
+		"zh_CN" : "开始读取上电时间(&B)",
+		"en_US" : "Start Reading &Boot Time"
+	},
+	"STR_BTN_STOP_READING_BOOT_TIME" : {
+		"zh_CN" : "停止读取上电时间(&B)",
+		"en_US" : "Stop Reading &Boot Time"
+	},
 	"STR_LABEL_SERIAL" : {
 		"zh_CN" : "串口 :",
 		"en_US" : "Serial :"
@@ -34,6 +50,14 @@
 	"STR_LABEL_CURRENT_FIRMWARE_MODE" : {
 		"zh_CN" : "当前固件模式 :",
 		"en_US" : "Current Firmware Mode :"
+	},
+	"STR_LABEL_FAN_SPEED" : {
+		"zh_CN" : "风扇转速 :",
+		"en_US" : "Fan Speed :"
+	},
+	"STR_LABEL_BOOT_TIME" : {
+		"zh_CN" : "上电时间 :",
+		"en_US" : "Boot Time :"
 	},
 	"STR_MESSAGE_INFO":{
 		"zh_CN" : "%1 信息 : %2",

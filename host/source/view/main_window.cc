@@ -22,6 +22,10 @@ MainWindow::MainWindow() :
         = new FirmwareModeWidget(this, m_boardController, m_stringTable);
     layout->addWidget(m_firmwareModeWidget);
 
+    m_genericOperationWidget
+        = new GenericOperationWidget(this, m_boardController, m_stringTable);
+    layout->addWidget(m_genericOperationWidget);
+
     m_messageWidget = new MessageWidget(this, m_stringTable);
     layout->addWidget(m_messageWidget);
     m_boardController->connect(m_boardController, &BoardController::printInfo,

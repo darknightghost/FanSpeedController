@@ -7,6 +7,7 @@
 #include <locale/string_table.h>
 
 #include <view/firmware_mode_widget.h>
+#include <view/generic_operation_widget.h>
 #include <view/message_widget.h>
 #include <view/serial_widget.h>
 
@@ -18,6 +19,8 @@ class MainWindow : public QWidget {
 
     SerialWidget *      m_serialWidget;       ///< Serial widget.
     FirmwareModeWidget *m_firmwareModeWidget; ///< Firmware mode widget.
+    GenericOperationWidget
+        *m_genericOperationWidget; ///< Generic operation widget.
 
     MessageWidget *m_messageWidget; ///< Message widget.
 
