@@ -76,10 +76,11 @@ void timer0_isr() __interrupt INT_TIMER0
     TCON &= 0xDF;
     l_boot_time += 17;
     ++l_speed_current_sampling_tick;
-    if (l_speed_current_sampling_count >= SAMPLING_TTICKS) {
+    if (l_speed_current_sampling_tick >= SAMPLING_TTICKS) {
         // Input speed.
         l_speed_input_count            = l_speed_current_sampling_count;
         l_speed_current_sampling_count = 0;
+        l_speed_current_sampling_tick  = 0;
         time0_flags |= FLAG_SPEED_COUNT_UPDATED;
     }
 }
@@ -162,7 +163,8 @@ void set_current_mode(uint8_t mode)
  */
 uint16_t input_speed()
 {
-    return l_speed_input_hz;
+    // return l_speed_input_hz;
+    return l_speed_input_count;
 }
 
 /**

@@ -61,7 +61,7 @@ add_link_options (
     --nostdlib
     )
 
-if (UNIX)
+if (NOT WIN32)
     add_custom_command (
         DEPENDS     "${PROJECT_NAME}"
         OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
