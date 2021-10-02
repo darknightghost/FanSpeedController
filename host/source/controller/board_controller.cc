@@ -383,7 +383,7 @@ void BoardController::updateSpeed()
     emit this->printInfo(
         QDateTime::currentDateTime(),
         m_stringTable->getString("STR_MESSAGE_OPERATION_SUCCEED"));
-    emit this->speedUpdated(beToLe(reply.speed));
+    emit this->speedUpdated(reply.speed);
     return;
 }
 
@@ -489,7 +489,6 @@ void BoardController::updateClock()
     emit this->printInfo(
         QDateTime::currentDateTime(),
         m_stringTable->getString("STR_MESSAGE_OPERATION_SUCCEED"));
-    // emit this->clockUpdated(beToLe(reply.bootTime));
     emit this->clockUpdated(reply.bootTime);
     return;
 }
