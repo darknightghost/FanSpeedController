@@ -76,6 +76,10 @@ GenericOperationWidget::GenericOperationWidget(QWidget *        parent,
                   &GenericOperationWidget::onSpeedUpdated);
     this->connect(m_boardController, &BoardController::clockUpdated, this,
                   &GenericOperationWidget::onClockUpdated);
+    this->connect(m_boardController, &BoardController::opened, this,
+                  &GenericOperationWidget::onOpened);
+    this->connect(m_boardController, &BoardController::closed, this,
+                  &GenericOperationWidget::onClosed);
     this->connect(this, &GenericOperationWidget::updateSpeed, m_boardController,
                   &BoardController::updateSpeed);
     this->connect(this, &GenericOperationWidget::updateClock, m_boardController,
