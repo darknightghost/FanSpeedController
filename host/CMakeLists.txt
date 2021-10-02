@@ -58,6 +58,11 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
         add_link_options (-fno-omit-frame-pointer -fsanitize=address)
         message (STATUS "Address sanitizer is enabled.")
 
+    elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+        add_compile_options (/fsanitize=address)
+        add_link_options (/fsanitize=address)
+        message (STATUS "Address sanitizer is enabled.")
+
     endif()
 
 endif ()
