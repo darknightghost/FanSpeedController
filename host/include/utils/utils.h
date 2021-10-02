@@ -18,7 +18,7 @@ inline
 {
     IntType  ret = value;
     uint8_t *p1  = reinterpret_cast<uint8_t *>(&ret);
-    uint8_t *p2  = p1 + sizeof(IntType) + 1;
+    uint8_t *p2  = p1 + sizeof(IntType) - 1;
 
     while (p1 < p2) {
         uint8_t tmp = *p2;
