@@ -122,8 +122,8 @@ else ()
 endif ()
 
 # Dependencies
-find_package (PythonInterp 
-    REQUIRED        3)
+find_package (PythonInterp  3
+    REQUIRED)
 
 find_package (Qt5       5.14.1  REQUIRED
     COMPONENTS  Core Widgets Network SerialPort)

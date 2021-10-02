@@ -61,27 +61,28 @@ add_link_options (
     --nostdlib
     )
 
-if (NOT WIN32)
-    add_custom_command (
-        DEPENDS     "${PROJECT_NAME}"
-        OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
-        COMMAND     "bash" "-c" "packihx \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx\" >\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex\""
-        )
+# Python3
+find_package (PythonInterp  3
+    REQUIRED)
 
-    add_custom_command (
-        DEPENDS     "${PROJECT_NAME}"
-        OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
-        COMMAND     "bash" "-c" "sdobjcopy -I ihex -O binary \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin\""
-        )
+add_custom_command (
+    DEPENDS     "${PROJECT_NAME}"
+    OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
+    COMMAND      "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/generic_hex.py" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
+    )
 
-    add_custom_target (
-        "${PROJECT_NAME}.hex"   ALL
-        DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
-        )
+add_custom_command (
+    DEPENDS     "${PROJECT_NAME}"
+    OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
+    COMMAND     "sdobjcopy" "-I" "ihex" "-O" "binary" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
+    )
 
-    add_custom_target (
-        "${PROJECT_NAME}.bin"   ALL
-        DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
-        )
+add_custom_target (
+    "${PROJECT_NAME}.hex"   ALL
+    DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
+    )
 
-endif ()
+add_custom_target (
+    "${PROJECT_NAME}.bin"   ALL
+    DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
+    )
