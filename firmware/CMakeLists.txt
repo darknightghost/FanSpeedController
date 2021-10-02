@@ -28,6 +28,7 @@ endif ()
 set (DATA_SIZE              128)
 set (IDATA_SIZE             128)
 set (XDATA_SIZE             1024)
+set (CODE_SIZE              17408)
 
 add_compile_options (
     "--std-sdcc11" 
@@ -36,6 +37,7 @@ add_compile_options (
     "-mmcs51" 
     "--iram-size" "${IDATA_SIZE}"
     "--xram-size" "${XDATA_SIZE}"
+    "--code-size" "${CODE_SIZE}"
     "-DBUILD_FIRMWARE"
     )
 
@@ -55,6 +57,8 @@ add_link_options (
     "-mmcs51" 
     "--iram-size" "${IDATA_SIZE}"
     "--xram-size" "${XDATA_SIZE}"
+    "--code-size" "${CODE_SIZE}"
+    --nostdlib
     )
 
 add_custom_command (
@@ -63,7 +67,18 @@ add_custom_command (
     COMMAND     "bash" "-c" "packihx \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx\" >\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex\""
     )
 
+add_custom_command (
+    DEPENDS     "${PROJECT_NAME}"
+    OUTPUT      "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
+    COMMAND     "bash" "-c" "sdobjcopy -I ihex -O binary \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.ihx\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin\""
+    )
+
 add_custom_target (
     "${PROJECT_NAME}.hex"   ALL
     DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
+    )
+
+add_custom_target (
+    "${PROJECT_NAME}.bin"   ALL
+    DEPENDS     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
     )

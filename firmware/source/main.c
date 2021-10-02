@@ -8,6 +8,7 @@ int main()
     platform_init();
 
     while (1) {
+        timer0_isr_second_stage();
         PCON |= 0x01;
     }
 }

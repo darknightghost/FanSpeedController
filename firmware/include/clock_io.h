@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <types.h>
 
 #include <command.h>
 #include <platform.h>
@@ -24,7 +24,12 @@ extern uint32_t boot_time();
 /**
  * @brief       Timer0 ISR.
  */
-extern void timer0_isr(void) __interrupt INT_TIMER0;
+extern void timer0_isr() __interrupt INT_TIMER0;
+
+/**
+ * @brief       Timer0 ISR second stage.
+ */
+extern void timer0_isr_second_stage();
 
 /**
  * @brief       Initialize I/O.
@@ -49,6 +54,13 @@ extern uint8_t current_mode();
  * @param[in]   mode    New mode.
  */
 extern void set_current_mode(uint8_t mode);
+
+/**
+ * @brief       Get input speed.
+ *
+ * @return      speed(HZ).
+ */
+extern uint16_t input_speed();
 
 /**
  * @brief       INT1 ISR.

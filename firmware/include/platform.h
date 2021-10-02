@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <types.h>
 
 // Definations of STC8G1K08-36I-SOP8
 // IRC = 33.1776 MHz
@@ -93,6 +93,9 @@ __sfr __at(0xF5) IAP_TPS;
 #define SPEED_OUTPUT P5_5
 #define SPEED_INPUT  P3_3
 #define PWM_OUTPUT   P3_2
+
+// Generate bit mask.
+#define MASK(type, value) (~((type)(value)))
 
 /**
  * @brief       Initialize platform.

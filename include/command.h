@@ -1,9 +1,13 @@
 #pragma once
 
-#if defined __cplusplus
-    #include <cstdint>
+#if defined BUILD_FIRMWARE
+    #include <types.h>
 #else
-    #include <stdint.h>
+    #if defined __cplusplus
+        #include <cstdint>
+    #else
+        #include <stdint.h>
+    #endif
 #endif
 
 #if ! defined BUILD_FIRMWARE
@@ -59,7 +63,7 @@ enum class CMDType : uint8_t {
     SetPWM      = CMD_TYPE_SET_PWM,      ///< Set output pwm.
     ReacConfig  = CMD_TYPE_READ_CONFIG,  ///< Read config.
     WriteConfig = CMD_TYPE_WRITE_CONFIG, ///< Write config.
-    ReadClock   = CMD_TYPE_READ_CLOCK    ///< Read clock..
+    ReadClock   = CMD_TYPE_READ_CLOCK    ///< Read clock.
 };
 
 /**

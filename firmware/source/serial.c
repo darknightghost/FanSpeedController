@@ -38,7 +38,7 @@ void enable_serial()
  *
  * @return      On success, the method  returns 0, otherwise returns -1.
  */
-static inline int serial_read_byte(uint8_t *byte)
+static int serial_read_byte(uint8_t *byte)
 {
     __idata uint32_t begin_time = boot_time();
 
@@ -62,7 +62,7 @@ static inline int serial_read_byte(uint8_t *byte)
  *
  * @param[in]  byte        Byte to write.
  */
-static inline void serial_write_byte(uint8_t byte)
+static void serial_write_byte(uint8_t byte)
 {
     // Clear send status.
     SCON &= 0xFD;
@@ -85,7 +85,7 @@ static inline void serial_write_byte(uint8_t byte)
  * @param[in]  bytes        Bytes to write.
  * @param[in]  size         Size of bytes.
  */
-static inline void serial_write_bytes(uint8_t *bytes, uint8_t size)
+static void serial_write_bytes(uint8_t *bytes, uint8_t size)
 {
     for (uint8_t i = 0; i < size; ++i) {
         serial_write_byte(*bytes);
@@ -98,7 +98,7 @@ static inline void serial_write_bytes(uint8_t *bytes, uint8_t size)
 /**
  * @brief       Get firmware mode.
  */
-static inline void cmd_get_mode()
+static void cmd_get_mode()
 {
     __xdata struct ReplyGetMode reply;
     reply.header.replyType = REPLY_TYPE_SUCCESS;
@@ -111,7 +111,7 @@ static inline void cmd_get_mode()
  *
  * @param[in]   mode    Mode.
  */
-static inline void cmd_set_mode(uint8_t mode)
+static void cmd_set_mode(uint8_t mode)
 {
     set_current_mode(mode);
     __xdata struct ReplySetMode reply;
@@ -124,7 +124,7 @@ static inline void cmd_set_mode(uint8_t mode)
  *
  * @param[in]   port        Port to read.
  */
-static inline void cmd_read_port(uint8_t port)
+static void cmd_read_port(uint8_t port)
 {
     // Check.
     if (current_mode() != FIRMWARE_MODE_TEST) {
@@ -154,7 +154,7 @@ static inline void cmd_read_port(uint8_t port)
  * @param[in]   port        Port to read.
  * @param[in]   value       Value to write.
  */
-static inline void cmd_write_port(uint8_t port, uint8_t value)
+static void cmd_write_port(uint8_t port, uint8_t value)
 {
     // Check.
     if (current_mode() != FIRMWARE_MODE_TEST) {
@@ -181,27 +181,35 @@ static inline void cmd_write_port(uint8_t port, uint8_t value)
 /**
  * @brief       Read fan speed.
  */
-static inline void cmd_read_speed() {}
+static void cmd_read_speed()
+{
+    // Reply.
+    __xdata struct ReplyReadSpeed reply;
+    reply.header.replyType = REPLY_TYPE_SUCCESS;
+    reply.speed            = input_speed();
+
+    serial_write_bytes((uint8_t *)(&reply), (uint8_t)sizeof(reply));
+}
 
 /**
  * @brief       Set output pwm.
  */
-static inline void cmd_set_pwm() {}
+static void cmd_set_pwm() {}
 
 /**
  * @brief       Read config.
  */
-static inline void cmd_read_config() {}
+static void cmd_read_config() {}
 
 /**
  * @brief       Write config.
  */
-static inline void cmd_write_config() {}
+static void cmd_write_config() {}
 
 /**
  * @brief       Read clock.
  */
-static inline void cmd_read_clock()
+static void cmd_read_clock()
 {
     // Reply.
     __xdata struct ReplyReadClock reply;
@@ -214,7 +222,7 @@ static inline void cmd_read_clock()
 /**
  * @brief       Handle command.
  */
-static inline void serial_on_command()
+static void serial_on_command()
 {
     __xdata uint8_t byte;
 
@@ -401,7 +409,7 @@ _PARSE_CMD_WRITE_PORT : {
 }
 
 _PARSE_CMD_READ_SPEED : {
-    serial_write_byte(REPLY_TYPE_FAILED);
+    cmd_read_speed();
     return;
 }
 

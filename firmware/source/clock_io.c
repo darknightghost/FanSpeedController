@@ -1,27 +1,39 @@
+#include <types.h>
+
 #include <clock_io.h>
 
-#define SAMPLING_TTICKS       11764
-#define SAMPLING_MICROSECONDS (SAMPLING_TTICKS * 17)
+#define TICK_US               17
+#define SAMPLING_TTICKS       29411
+#define SAMPLING_MICROSECONDS (SAMPLING_TTICKS * TICK_US)
+
+#define FLAG_TIMER0_ISR_CALLED   0x01
+#define FLAG_SPEED_COUNT_UPDATED 0x02
+#define FLAG_PWM_COUNT_UPDATED   0x04
 
 static __data uint32_t l_boot_time = 0;                    ///< Boot time.
 static __data uint8_t  l_mode      = FIRMWARE_MODE_NORMAL; ///< Firmware mode.
 
-static __data uint16_t l_current_sampling_tick = 0; ///< Curent sampling tick.
-static __data uint16_t l_current_input_speed_tick_count
-    = 0; ///< Input speed ticks count.
+static __data uint8_t time0_flags = 0; ///< Timer 0 flags.
+
+// Speed.
+static __data uint16_t l_speed_current_sampling_tick
+    = 0; ///< Curent sampling tick.
+static __data uint16_t l_speed_current_sampling_count
+    = 0;                                        ///< Sampling input speed count.
+static __data uint16_t l_speed_input_count = 0; ///< Input speed count.
+static __data uint16_t l_speed_input_hz    = 0; ///< Input speed hz.
+/*
+static __data uint16_t l_output_change_tick = 0; ///< Input speed count.
 static __data uint16_t l_current_input_pwm_high_level_count
     = 0; ///< Curent input pwm high-level ticks.
+
+// PWM.
 
 static __data uint16_t l_output_speed_interval
     = 0xFF; ///< Inverval to output low-level on speed output pin.
 static __data uint16_t l_output_speed_ticks_count
     = 0; ///< Count to output low-level on speed output pin.
-
-static __data uint8_t
-    l_pwm_map[20]; ///< Count to output low-level on speed output pin.
-static __data uint16_t l_sourceFullSpeed; ///< Source full speed.
-static __data uint16_t l_targetFullSpeed; ///< Target full speed.
-
+*/
 /**
  * @brief       Initialize clock.
  */
@@ -57,10 +69,45 @@ uint32_t boot_time()
 /**
  * @brief       Timer0 ISR.
  */
-void timer0_isr(void) __interrupt INT_TIMER0
+void timer0_isr() __interrupt INT_TIMER0
 {
+    time0_flags |= FLAG_TIMER0_ISR_CALLED;
+
     TCON &= 0xDF;
     l_boot_time += 17;
+    ++l_speed_current_sampling_tick;
+    if (l_speed_current_sampling_count >= SAMPLING_TTICKS) {
+        // Input speed.
+        l_speed_input_count            = l_speed_current_sampling_count;
+        l_speed_current_sampling_count = 0;
+        time0_flags |= FLAG_SPEED_COUNT_UPDATED;
+    }
+}
+
+/**
+ * @brief       Timer0 ISR second stage.
+ */
+void timer0_isr_second_stage()
+{
+    // Check flag.
+    if (! (time0_flags & FLAG_TIMER0_ISR_CALLED)) {
+        return;
+    }
+
+    time0_flags &= MASK(uint8_t, FLAG_TIMER0_ISR_CALLED);
+
+    // Update speed.
+    if (time0_flags & FLAG_SPEED_COUNT_UPDATED) {
+        __idata uint32_t input_count = l_speed_input_count;
+        l_speed_input_hz
+            = (uint16_t)(input_count * 1e6 / SAMPLING_MICROSECONDS);
+        time0_flags &= MASK(uint8_t, FLAG_SPEED_COUNT_UPDATED);
+    }
+
+    // Update pwm.
+    if (time0_flags & FLAG_PWM_COUNT_UPDATED) {
+        time0_flags &= MASK(uint8_t, FLAG_PWM_COUNT_UPDATED);
+    }
 }
 
 /**
@@ -111,9 +158,17 @@ void set_current_mode(uint8_t mode)
 }
 
 /**
+ * @brief       Get input speed.
+ */
+uint16_t input_speed()
+{
+    return l_speed_input_hz;
+}
+
+/**
  * @brief       INT1 ISR.
  */
 void int1_isr(void) __interrupt INT_INT1
 {
-    ++l_current_input_speed_tick_count;
+    ++l_speed_current_sampling_count;
 }

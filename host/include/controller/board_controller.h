@@ -75,6 +75,20 @@ class BoardController : public QThread {
      */
     void firmwareModeUpdated(FirmwareMode mode);
 
+    /**
+     * @brief       Firmware mode signal.
+     *
+     * @param[in]   speed   Speed(HZ).
+     */
+    void speedUpdated(quint16 speed);
+
+    /**
+     * @brief       Firmware mode signal.
+     *
+     * @param[in]   time    Boot time(microseconds).
+     */
+    void clockUpdated(quint32 time);
+
   public slots:
     /**
      * @brief       Open serial.
@@ -104,6 +118,16 @@ class BoardController : public QThread {
      * @param[in]   ode        Mode to set.
      */
     void setFirmwareMode(FirmwareMode mode);
+
+    /**
+     * @brief       Update fan speed.
+     */
+    void updateSpeed();
+
+    /**
+     * @brief       Update clock.
+     */
+    void updateClock();
 
   private:
     /**

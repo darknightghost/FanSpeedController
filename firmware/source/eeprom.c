@@ -1,6 +1,7 @@
+#include <types.h>
+
 #include <eeprom.h>
 #include <platform.h>
-
 #define GROUP_NUM ((512 / RECORD_SIZE / 8) * 8)
 /**
  * @brief       header.
@@ -30,9 +31,10 @@ static __xdata struct record_allocation_table rat; ///< Record allocation table.
  * @param[in]   addr        Address of the byte.
  * @param[out]  byte        Byte read.
  *
- * @return      On success, the method returns 0, otherwise returns -1.
+ * @return      On success, the method returns \c true, otherwise returns
+ false.
  */
-static inline int8_t eeprom_read_byte(uint16_t addr, uint8_t *byte)
+static bool eeprom_read_byte(uint16_t addr, uint8_t *byte)
 {
     IAP_CONTR &= 0xEF;
     IAP_ADDRL = addr & 0xFF;
@@ -43,10 +45,10 @@ static inline int8_t eeprom_read_byte(uint16_t addr, uint8_t *byte)
     IAP_TRIG = 0xA5;
 
     if (IAP_CONTR & 0x10) {
-        return -1;
+        return false;
     } else {
         *byte = IAP_DATA;
-        return 0;
+        return true;
     }
 }
 
@@ -56,9 +58,10 @@ static inline int8_t eeprom_read_byte(uint16_t addr, uint8_t *byte)
  * @param[in]   addr        Address of the byte.
  * @param[out]  byte        Byte to write.
  *
- * @return      On success, the method returns 0, otherwise returns -1.
+ * @return      On success, the method returns \c true, otherwise returns \c
+ * false.
  */
-static inline int8_t eeprom_write_byte(uint16_t addr, uint8_t byte)
+static bool eeprom_write_byte(uint16_t addr, uint8_t byte)
 {
     IAP_CONTR &= 0xEF;
     IAP_ADDRL = addr & 0xFF;
@@ -70,9 +73,9 @@ static inline int8_t eeprom_write_byte(uint16_t addr, uint8_t byte)
     IAP_TRIG = 0xA5;
 
     if (IAP_CONTR & 0x10) {
-        return -1;
+        return false;
     } else {
-        return 0;
+        return true;
     }
 }
 
@@ -83,18 +86,18 @@ static inline int8_t eeprom_write_byte(uint16_t addr, uint8_t byte)
  * @param[out]  bytes       Bytes read.
  * @param[in]   size        Size.
  *
- * @return      On success, the method returns 0, otherwise returns bytes read.
+ * @return      On success, the method returns \c true, otherwise returns
+ false.
  */
-static inline int8_t
-    eeprom_read_bytes(uint16_t addr, uint8_t *byte, uint8_t size)
+static bool eeprom_read_bytes(uint16_t addr, uint8_t *byte, uint8_t size)
 {
     for (uint8_t i = 0; i < size; ++i) {
-        if (eeprom_read_byte(addr + i, byte + i) < 0) {
-            return -1;
+        if (! eeprom_read_byte(addr + i, byte + i)) {
+            return false;
         }
     }
 
-    return (int8_t)size;
+    return true;
 }
 
 /**
@@ -104,19 +107,17 @@ static inline int8_t
  * @param[in]   bytes       Bytes to write.
  * @param[in]   size        Size.
  *
- * @return      On success, the method returns 0, otherwise returns bytes
- *              written.
+ * @return      On success, the method returns true, otherwise returns false
  */
-static inline int8_t
-    eeprom_write_bytes(uint16_t addr, const uint8_t *byte, uint8_t size)
+static bool eeprom_write_bytes(uint16_t addr, const uint8_t *byte, uint8_t size)
 {
     for (uint8_t i = 0; i < size; ++i) {
-        if (eeprom_write_byte(addr + i, *(byte + i)) < 0) {
-            return -1;
+        if (! eeprom_write_byte(addr + i, *(byte + i))) {
+            return false;
         }
     }
 
-    return (int8_t)size;
+    return true;
 }
 
 /**
@@ -126,7 +127,7 @@ static inline int8_t
  *
  * @return      On success, the method returns 0, otherwise returns -1.
  */
-static inline int8_t eeprom_erase(uint16_t addr)
+static int8_t eeprom_erase(uint16_t addr)
 {
     IAP_CONTR &= 0xEF;
     IAP_ADDRL = addr & 0xFF;
@@ -148,39 +149,39 @@ static inline int8_t eeprom_erase(uint16_t addr)
  *
  * @return      On success, the method returns 0, otherwise returns -1.
  */
-static inline int8_t eeprom_format()
+static bool eeprom_format()
 {
     // Erase all.
     if (eeprom_erase(PAGE_0) < 0) {
-        return -1;
+        return false;
     }
 
     if (eeprom_erase(PAGE_1) < 0) {
-        return -1;
+        return false;
     }
 
     if (eeprom_erase(PAGE_2) < 0) {
-        return -1;
+        return false;
     }
 
     if (eeprom_erase(PAGE_3) < 0) {
-        return -1;
+        return false;
     }
 
     if (eeprom_erase(PAGE_4) < 0) {
-        return -1;
+        return false;
     }
 
     if (eeprom_erase(PAGE_5) < 0) {
-        return -1;
+        return false;
     }
 
     if (eeprom_erase(PAGE_6) < 0) {
-        return -1;
+        return false;
     }
 
     if (eeprom_erase(PAGE_7) < 0) {
-        return -1;
+        return false;
     }
 
     // Make RAT.
@@ -191,11 +192,11 @@ static inline int8_t eeprom_format()
     rat.err = 0;
 
     // Write RAT.
-    if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat)) < 0) {
-        return -1;
+    if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
+        return false;
     }
 
-    return 0;
+    return true;
 }
 
 /**
@@ -263,7 +264,7 @@ uint16_t allocate_write_addr()
         eeprom_format();
         // Write RAT.
         rat.bitmap[0] = 0xFC;
-        if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat)) < 0) {
+        if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
             return -1;
         }
         return RECORD_SIZE;
@@ -273,8 +274,7 @@ uint16_t allocate_write_addr()
         case 0xFF:
             // Write RAT.
             rat.bitmap[group_count] = 0xFE;
-            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
-                < 0) {
+            if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
                 return -1;
             }
             return (8 * group_count + 0) * RECORD_SIZE;
@@ -282,8 +282,7 @@ uint16_t allocate_write_addr()
         case 0xFE:
             // Write RAT.
             rat.bitmap[group_count] = 0xFC;
-            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
-                < 0) {
+            if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
                 return -1;
             }
             return (8 * group_count + 1) * RECORD_SIZE;
@@ -291,8 +290,7 @@ uint16_t allocate_write_addr()
         case 0xFC:
             // Write RAT.
             rat.bitmap[group_count] = 0xF8;
-            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
-                < 0) {
+            if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
                 return -1;
             }
             return (8 * group_count + 2) * RECORD_SIZE;
@@ -300,8 +298,7 @@ uint16_t allocate_write_addr()
         case 0xF8:
             // Write RAT.
             rat.bitmap[group_count] = 0xF0;
-            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
-                < 0) {
+            if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
                 return -1;
             }
             return (8 * group_count + 3) * RECORD_SIZE;
@@ -309,8 +306,7 @@ uint16_t allocate_write_addr()
         case 0xF0:
             // Write RAT.
             rat.bitmap[group_count] = 0xE0;
-            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
-                < 0) {
+            if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
                 return -1;
             }
             return (8 * group_count + 4) * RECORD_SIZE;
@@ -318,8 +314,7 @@ uint16_t allocate_write_addr()
         case 0xE0:
             // Write RAT.
             rat.bitmap[group_count] = 0xC0;
-            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
-                < 0) {
+            if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
                 return -1;
             }
             return (8 * group_count + 5) * RECORD_SIZE;
@@ -327,8 +322,7 @@ uint16_t allocate_write_addr()
         case 0xC0:
             // Write RAT.
             rat.bitmap[group_count] = 0x80;
-            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
-                < 0) {
+            if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
                 return -1;
             }
             return (8 * group_count + 6) * RECORD_SIZE;
@@ -336,8 +330,7 @@ uint16_t allocate_write_addr()
         case 0x80:
             // Write RAT.
             rat.bitmap[group_count] = 0x00;
-            if (eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))
-                < 0) {
+            if (! eeprom_write_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
                 return -1;
             }
             return (8 * group_count + 7) * RECORD_SIZE;
@@ -359,7 +352,7 @@ void eeprom_init()
     IAP_TPS = 33;
 
     // Read RAT;
-    if (eeprom_read_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat)) < 0) {
+    if (! eeprom_read_bytes(PAGE_0, (uint8_t *)(&rat), sizeof(rat))) {
         reboot();
     }
 
