@@ -73,17 +73,19 @@ GenericOperationWidget::GenericOperationWidget(QWidget *        parent,
 
     // Connect.
     this->connect(m_boardController, &BoardController::speedUpdated, this,
-                  &GenericOperationWidget::onSpeedUpdated);
+                  &GenericOperationWidget::onSpeedUpdated,
+                  Qt::QueuedConnection);
     this->connect(m_boardController, &BoardController::clockUpdated, this,
-                  &GenericOperationWidget::onClockUpdated);
+                  &GenericOperationWidget::onClockUpdated,
+                  Qt::QueuedConnection);
     this->connect(m_boardController, &BoardController::opened, this,
-                  &GenericOperationWidget::onOpened);
+                  &GenericOperationWidget::onOpened, Qt::QueuedConnection);
     this->connect(m_boardController, &BoardController::closed, this,
-                  &GenericOperationWidget::onClosed);
+                  &GenericOperationWidget::onClosed, Qt::QueuedConnection);
     this->connect(this, &GenericOperationWidget::updateSpeed, m_boardController,
-                  &BoardController::updateSpeed);
+                  &BoardController::updateSpeed, Qt::QueuedConnection);
     this->connect(this, &GenericOperationWidget::updateClock, m_boardController,
-                  &BoardController::updateClock);
+                  &BoardController::updateClock, Qt::QueuedConnection);
 }
 
 /**

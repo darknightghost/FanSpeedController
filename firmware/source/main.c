@@ -9,6 +9,6 @@ int main()
 
     while (1) {
         timer0_isr_second_stage();
-        PCON |= 0x01;
+        // PCON |= 0x01;
     }
 }

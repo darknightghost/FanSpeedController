@@ -6,9 +6,8 @@
 #define SAMPLING_TTICKS       29411
 #define SAMPLING_MICROSECONDS (SAMPLING_TTICKS * TICK_US)
 
-#define FLAG_TIMER0_ISR_CALLED   0x01
-#define FLAG_SPEED_COUNT_UPDATED 0x02
-#define FLAG_PWM_COUNT_UPDATED   0x04
+#define FLAG_SPEED_COUNT_UPDATED 0x01
+#define FLAG_PWM_COUNT_UPDATED   0x02
 
 static __data uint32_t l_boot_time = 0;                    ///< Boot time.
 static __data uint8_t  l_mode      = FIRMWARE_MODE_NORMAL; ///< Firmware mode.
@@ -71,8 +70,6 @@ uint32_t boot_time()
  */
 void timer0_isr() __interrupt INT_TIMER0
 {
-    time0_flags |= FLAG_TIMER0_ISR_CALLED;
-
     TCON &= 0xDF;
     l_boot_time += 17;
     ++l_speed_current_sampling_tick;
@@ -90,19 +87,13 @@ void timer0_isr() __interrupt INT_TIMER0
  */
 void timer0_isr_second_stage()
 {
-    // Check flag.
-    if (! (time0_flags & FLAG_TIMER0_ISR_CALLED)) {
-        return;
-    }
-
-    time0_flags &= MASK(uint8_t, FLAG_TIMER0_ISR_CALLED);
-
     // Update speed.
     if (time0_flags & FLAG_SPEED_COUNT_UPDATED) {
+        time0_flags &= MASK(uint8_t, FLAG_SPEED_COUNT_UPDATED);
         __idata uint32_t input_count = l_speed_input_count;
         l_speed_input_hz
             = (uint16_t)(input_count * 1e6 / SAMPLING_MICROSECONDS);
-        time0_flags &= MASK(uint8_t, FLAG_SPEED_COUNT_UPDATED);
+        l_speed_input_hz = l_speed_input_count;
     }
 
     // Update pwm.
@@ -163,8 +154,7 @@ void set_current_mode(uint8_t mode)
  */
 uint16_t input_speed()
 {
-    // return l_speed_input_hz;
-    return l_speed_input_count;
+    return l_speed_input_hz;
 }
 
 /**
