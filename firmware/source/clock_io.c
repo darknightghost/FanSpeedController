@@ -4,7 +4,7 @@
 
 #define TICK_US               17
 #define SAMPLING_TTICKS       29411
-#define SAMPLING_MICROSECONDS (SAMPLING_TTICKS * TICK_US)
+#define SAMPLING_MICROSECONDS ((uint32_t)SAMPLING_TTICKS * TICK_US)
 
 #define FLAG_SPEED_COUNT_UPDATED 0x01
 #define FLAG_PWM_COUNT_UPDATED   0x02
@@ -90,10 +90,9 @@ void timer0_isr_second_stage()
     // Update speed.
     if (time0_flags & FLAG_SPEED_COUNT_UPDATED) {
         time0_flags &= MASK(uint8_t, FLAG_SPEED_COUNT_UPDATED);
-        __idata uint32_t input_count = l_speed_input_count;
-        l_speed_input_hz
-            = (uint16_t)(input_count * 1e6 / SAMPLING_MICROSECONDS);
-        l_speed_input_hz = l_speed_input_count;
+        __idata uint32_t tmp = l_speed_input_count;
+        tmp                  = tmp * 1000000 / SAMPLING_MICROSECONDS;
+        l_speed_input_hz     = (uint16_t)tmp;
     }
 
     // Update pwm.

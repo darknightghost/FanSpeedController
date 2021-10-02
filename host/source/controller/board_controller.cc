@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include <QtCore/QDebug>
 #include <QtCore/QMetaType>
 
@@ -503,6 +505,10 @@ qint64 BoardController::sendCommand(const uint8_t *data, size_t size)
     if (ret < 0) {
         return -1;
     }
+
+#if (defined OS_WINDOWS)
+    ::std::this_thread::sleep_for(::std::chrono::milliseconds(100));
+#endif
 
     return ret;
 }
