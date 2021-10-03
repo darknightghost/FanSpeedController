@@ -179,17 +179,32 @@ static void cmd_write_port(uint8_t port, uint8_t value)
 }
 
 /**
- * @brief       Read fan speed.
+ * @brief       Get input fan speed.
  */
-static void cmd_get_speed()
+static void cmd_get_input_speed()
 {
     // Reply.
-    __xdata struct ReplyGetSpeed reply;
+    __xdata struct ReplyGetInputSpeed reply;
     reply.header.replyType = REPLY_TYPE_SUCCESS;
     reply.speed            = input_speed();
 
     serial_write_bytes((uint8_t *)(&reply), (uint8_t)sizeof(reply));
 }
+
+/**
+ * @brief       Get input pwm.
+ */
+static void cmd_get_input_pwm() {}
+
+/**
+ * @brief       Set output speed.
+ */
+static void cmd_set_output_speed() {}
+
+/**
+ * @brief       Set output pwm.
+ */
+static void cmd_set_output_pwn() {}
 
 /**
  * @brief       Set output pwm.
@@ -267,12 +282,20 @@ _PARSE_CMD:
             goto _PARSE_CMD_WRITE_PORT;
         }
 
-        case CMD_TYPE_GET_SPEED: {
-            goto _PARSE_CMD_GET_SPEED;
+        case CMD_TYPE_GET_INPUT_SPEED: {
+            goto _PARSE_CMD_GET_INPUT_SPEED;
         }
 
-        case CMD_TYPE_SET_PWM: {
-            goto _PARSE_CMD_SET_PWM;
+        case CMD_TYPE_GET_INPUT_PWM: {
+            goto _PARSE_CMD_GET_INPUT_PWM;
+        }
+
+        case CMD_TYPE_SET_OUTPUT_SPEED: {
+            goto _PARSE_CMD_SET_OUTPUT_SPEED;
+        }
+
+        case CMD_TYPE_SET_OUTPUT_PWM: {
+            goto _PARSE_CMD_SET_OUTPUT_PWM;
         }
 
         case CMD_TYPE_READ_CONFIG: {
@@ -408,12 +431,22 @@ _PARSE_CMD_WRITE_PORT : {
     return;
 }
 
-_PARSE_CMD_GET_SPEED : {
-    cmd_get_speed();
+_PARSE_CMD_GET_INPUT_SPEED : {
+    cmd_get_input_speed();
     return;
 }
 
-_PARSE_CMD_SET_PWM : {
+_PARSE_CMD_GET_INPUT_PWM : {
+    serial_write_byte(REPLY_TYPE_FAILED);
+    return;
+}
+
+_PARSE_CMD_SET_OUTPUT_SPEED : {
+    serial_write_byte(REPLY_TYPE_FAILED);
+    return;
+}
+
+_PARSE_CMD_SET_OUTPUT_PWM : {
     serial_write_byte(REPLY_TYPE_FAILED);
     return;
 }

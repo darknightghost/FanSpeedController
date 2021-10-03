@@ -36,16 +36,20 @@
 #define PORT_WRITE_SPEED_OUTPUT ((uint8_t)0x00)
 #define PORT_WRITE_PWM_OUTPUT   ((uint8_t)0x01)
 
+// Status monitor command.
+#define CMD_TYPE_GET_INPUT_SPEED ((uint8_t)0x20)
+#define CMD_TYPE_GET_INPUT_PWM   ((uint8_t)0x21)
+
 /// Fan test command, manual mode only.
-#define CMD_TYPE_GET_SPEED ((uint8_t)0x20)
-#define CMD_TYPE_SET_PWM   ((uint8_t)0x21)
+#define CMD_TYPE_SET_OUTPUT_SPEED ((uint8_t)0x30)
+#define CMD_TYPE_SET_OUTPUT_PWM   ((uint8_t)0x31)
 
 /// Config.
-#define CMD_TYPE_READ_CONFIG  ((uint8_t)0x30)
-#define CMD_TYPE_WRITE_CONFIG ((uint8_t)0x31)
+#define CMD_TYPE_READ_CONFIG  ((uint8_t)0x40)
+#define CMD_TYPE_WRITE_CONFIG ((uint8_t)0x41)
 
 /// Read clock.
-#define CMD_TYPE_READ_CLOCK ((uint8_t)0x40)
+#define CMD_TYPE_READ_CLOCK ((uint8_t)0x50)
 
 #define REPLY_TYPE_FAILED  ((uint8_t)0x00) ///< Command failed.
 #define REPLY_TYPE_SUCCESS ((uint8_t)0x01) ///< Success.
@@ -55,15 +59,17 @@
  * @brief       Command type.
  */
 enum class CMDType : uint8_t {
-    GetMode     = CMD_TYPE_GET_MODE,     ///< Get firmware mode.
-    SetMode     = CMD_TYPE_SET_MODE,     ///< Set firmware mode.
-    ReadPort    = CMD_TYPE_READ_PORT,    ///< Read output port.
-    WritePort   = CMD_TYPE_WRITE_PORT,   ///< Write input port.
-    GetSpeed    = CMD_TYPE_GET_SPEED,    ///< Get fan speed.
-    SetPWM      = CMD_TYPE_SET_PWM,      ///< Set output pwm.
-    ReacConfig  = CMD_TYPE_READ_CONFIG,  ///< Read config.
-    WriteConfig = CMD_TYPE_WRITE_CONFIG, ///< Write config.
-    ReadClock   = CMD_TYPE_READ_CLOCK    ///< Read clock.
+    GetMode        = CMD_TYPE_GET_MODE,         ///< Get firmware mode.
+    SetMode        = CMD_TYPE_SET_MODE,         ///< Set firmware mode.
+    ReadPort       = CMD_TYPE_READ_PORT,        ///< Read output port.
+    WritePort      = CMD_TYPE_WRITE_PORT,       ///< Write input port.
+    GetInputSpeed  = CMD_TYPE_GET_INPUT_SPEED,  ///< Get input fan speed.
+    GetInputPWM    = CMD_TYPE_GET_INPUT_PWM,    ///< Get input pwm.
+    SetOutputSpeed = CMD_TYPE_SET_OUTPUT_SPEED, ///< Set output speed.
+    SetOutputPWM   = CMD_TYPE_SET_OUTPUT_PWM,   ///< Set output pwm.
+    ReacConfig     = CMD_TYPE_READ_CONFIG,      ///< Read config.
+    WriteConfig    = CMD_TYPE_WRITE_CONFIG,     ///< Write config.
+    ReadClock      = CMD_TYPE_READ_CLOCK        ///< Read clock.
 };
 
 /**
@@ -169,16 +175,31 @@ struct CMDWritePort {
 };
 
 /**
- * @brief       Command GetSpeed.
+ * @brief       Command GetInputSpeed.
  */
-struct CMDGetSpeed {
+struct CMDGetInputSpeed {
     struct CMDHeader header; ///< Command header.
 };
 
 /**
- * @brief       Command SetPWM.
+ * @brief       Command GetInputPWM.
  */
-struct CMDSetPWM {
+struct CMDGetInputPWM {
+    struct CMDHeader header; ///< Command header.
+};
+
+/**
+ * @brief       Command SetOutputSpeed.
+ */
+struct CMDSetOutputSpeed {
+    struct CMDHeader header; ///< Command header.
+    uint16_t         speed;  ///< Speed(Hz).
+};
+
+/**
+ * @brief       Command SetOutputPWM.
+ */
+struct CMDSetOutputPWM {
     struct CMDHeader header;    ///< Command header.
     uint8_t          dutyCycle; ///< Duty cycle, 1-100.
 };
@@ -258,17 +279,32 @@ struct ReplyWritePort {
 };
 
 /**
- * @brief       Reply GetSpeed.
+ * @brief       Reply GetInputSpeed.
  */
-struct ReplyGetSpeed {
+struct ReplyGetInputSpeed {
     struct ReplyHeader header; ///< Header.
     uint16_t           speed;  ///< Speed(HZ).
 };
 
 /**
- * @brief       Reply SetPWM.
+ * @brief       Reply GetInputPWM.
  */
-struct ReplySetPWM {
+struct ReplyGetInputPWM {
+    struct ReplyHeader header;    ///< Header.
+    uint8_t            dutyCycle; ///< Duty cycle, 1-100.
+};
+
+/**
+ * @brief       Reply SetOutputSpeed.
+ */
+struct ReplySetOutputSpeed {
+    struct ReplyHeader header; ///< Header.
+};
+
+/**
+ * @brief       Reply SetOutputPWM.
+ */
+struct ReplySetOutputPWM {
     struct ReplyHeader header; ///< Header.
 };
 
