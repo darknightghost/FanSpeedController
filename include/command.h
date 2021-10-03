@@ -32,7 +32,7 @@
 
 /// Port to read/write.
 #define PORT_READ_PWM_INPUT     ((uint8_t)0x00)
-#define PORT_GET_SPEED_INPUT    ((uint8_t)0x01)
+#define PORT_READ_SPEED_INPUT   ((uint8_t)0x01)
 #define PORT_WRITE_SPEED_OUTPUT ((uint8_t)0x00)
 #define PORT_WRITE_PWM_OUTPUT   ((uint8_t)0x01)
 
@@ -85,8 +85,8 @@ enum class FirmwareMode : uint8_t {
  * @brief   Readable port.
  */
 enum class ReadablePort : uint8_t {
-    PWMInput   = PORT_READ_PWM_INPUT, ///< PWM input.
-    SpeedInput = PORT_GET_SPEED_INPUT ///< Speed input.
+    PWMInput   = PORT_READ_PWM_INPUT,  ///< PWM input.
+    SpeedInput = PORT_READ_SPEED_INPUT ///< Speed input.
 };
 
 /**

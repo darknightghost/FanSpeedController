@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
 
 #include <controller/board_controller.h>
@@ -14,6 +16,28 @@ class TestModeWidget : public QWidget {
   private:
     BoardController *m_boardController; ///< Board controller.
     StringTable *    m_stringTable;     ///< String table.
+
+    QPushButton *m_btnStartStopReadSpeedInput; ///< Button start/stop to read
+                                               ///< speed input port.
+    QLineEdit
+        *m_txtSpeedInputValue; ///< Text to show the value of speed input port.
+
+    QPushButton *m_btnStartStopReadPWMInput; ///< Button start/stop to read
+                                             ///< PWM input port.
+    QLineEdit
+        *m_txtPWMInputValue; ///< Text to show the value of wpm input port.
+
+    QPushButton
+        *m_btnSetSpeedOutput0; ///< Button to set speed output port to 0.
+    QPushButton
+        *m_btnSetSpeedOutput1; ///< Button to set speed output port to 1.
+
+    QPushButton *m_btnSetPWMOutput0; ///< Button to set PWM output port to 0.
+    QPushButton *m_btnSetPWMOutput1; ///< Button to set PWM output port to 1.
+
+    QTimer *m_updateTimer;      ///< Update timer.
+    bool    m_updateSpeedInput; ///< Update speed input port.
+    bool    m_updatePWMInput;   ///< Update PWM input port.
 
   public:
     /**

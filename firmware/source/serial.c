@@ -140,7 +140,7 @@ static void cmd_read_port(uint8_t port)
             reply.value = PWM_INPUT ? 1 : 0;
             break;
 
-        case PORT_GET_SPEED_INPUT:
+        case PORT_READ_SPEED_INPUT:
             reply.value = SPEED_INPUT ? 1 : 0;
             break;
     }
