@@ -14,19 +14,19 @@ static __data uint8_t  l_mode      = FIRMWARE_MODE_NORMAL; ///< Firmware mode.
 
 static __data uint8_t time0_flags = 0; ///< Timer 0 flags.
 
-// Speed.
+// Input Speed.
 static __data uint16_t l_speed_current_sampling_tick
     = 0; ///< Curent sampling tick.
 static __data uint16_t l_speed_current_sampling_count
     = 0;                                        ///< Sampling input speed count.
 static __data uint16_t l_speed_input_count = 0; ///< Input speed count.
 static __data uint16_t l_speed_input_hz    = 0; ///< Input speed hz.
+
+// Input PWM.
 /*
 static __data uint16_t l_output_change_tick = 0; ///< Input speed count.
 static __data uint16_t l_current_input_pwm_high_level_count
     = 0; ///< Curent input pwm high-level ticks.
-
-// PWM.
 
 static __data uint16_t l_output_speed_interval
     = 0xFF; ///< Inverval to output low-level on speed output pin.

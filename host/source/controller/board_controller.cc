@@ -506,10 +506,6 @@ qint64 BoardController::sendCommand(const uint8_t *data, size_t size)
         return -1;
     }
 
-#if (defined OS_WINDOWS)
-    ::std::this_thread::sleep_for(::std::chrono::milliseconds(100));
-#endif
-
     return ret;
 }
 

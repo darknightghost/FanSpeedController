@@ -120,17 +120,26 @@ ssize_t
     uint8_t *p          = reinterpret_cast<uint8_t *>(buffer);
     DWORD    sizeToRead = static_cast<DWORD>(size);
     DWORD    sizeRead   = 0;
+
+    ::std::chrono::steady_clock::time_point endTime
+        = ::std::chrono::steady_clock::now() + timeout;
+    ::std::chrono::milliseconds timeRemain = timeout;
     while (sizeRead < sizeToRead) {
         DWORD sz = 0;
         if (! ::ReadFile(m_nativeHandle, p + sizeRead, sizeToRead - sizeRead,
                          &sz, nullptr)) {
             return -1;
         }
-        if (sz == 0) {
-            return static_cast<ssize_t>(sizeRead);
-            ;
+        sizeRead += sz;
+
+        // Time remain.
+        auto now = ::std::chrono::steady_clock::now();
+        if (now < endTime) {
+            timeRemain
+                = ::std::chrono::duration_cast<::std::chrono::milliseconds>(
+                    endTime - now);
         } else {
-            sizeRead += sz;
+            break;
         }
     }
 
@@ -283,6 +292,10 @@ ssize_t
     // Read.
     uint8_t *p        = reinterpret_cast<uint8_t *>(buffer);
     size_t   sizeRead = 0;
+    ::std::chrono::steady_clock::time_point endTime
+        = ::std::chrono::steady_clock::now() + timeout;
+    ::std::chrono::milliseconds timeRemain = timeout;
+
     while (sizeRead < size) {
         // Wait for data.
         fd_set readFds;
@@ -290,8 +303,8 @@ ssize_t
         FD_SET(m_nativeHandle, &readFds);
 
         timeval timeToWait;
-        timeToWait.tv_sec  = timeout.count() / 10000;
-        timeToWait.tv_usec = timeout.count() % 1000 * 1000;
+        timeToWait.tv_sec  = timeRemain.count() / 10000;
+        timeToWait.tv_usec = timeRemain.count() % 1000 * 1000;
 
         if (::select(1, &readFds, nullptr, nullptr, &timeToWait) < 0) {
             char errBuf[256];
@@ -315,6 +328,16 @@ ssize_t
             return -1;
         } else {
             sizeRead += static_cast<size_t>(readRet);
+        }
+
+        // Time remain.
+        auto now = ::std::chrono::steady_clock::now();
+        if (now < endTime) {
+            timeRemain
+                = ::std::chrono::duration_cast<::std::chrono::milliseconds>(
+                    endTime - now);
+        } else {
+            return static_cast<ssize_t>(sizeRead);
         }
     }
 
