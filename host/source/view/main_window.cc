@@ -26,6 +26,14 @@ MainWindow::MainWindow() :
         = new GenericOperationWidget(this, m_boardController, m_stringTable);
     layout->addWidget(m_genericOperationWidget);
 
+    m_manualModeWidget
+        = new ManualModeWidget(this, m_boardController, m_stringTable);
+    layout->addWidget(m_manualModeWidget);
+
+    m_testModeWidget
+        = new TestModeWidget(this, m_boardController, m_stringTable);
+    layout->addWidget(m_testModeWidget);
+
     m_messageWidget = new MessageWidget(this, m_stringTable);
     layout->addWidget(m_messageWidget);
     m_boardController->connect(m_boardController, &BoardController::printInfo,

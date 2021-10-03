@@ -8,8 +8,10 @@
 
 #include <view/firmware_mode_widget.h>
 #include <view/generic_operation_widget.h>
+#include <view/manual_mode_operation_widget.h>
 #include <view/message_widget.h>
 #include <view/serial_widget.h>
+#include <view/test_mode_operation_widget.h>
 
 class MainWindow : public QWidget {
     Q_OBJECT
@@ -20,7 +22,9 @@ class MainWindow : public QWidget {
     SerialWidget *      m_serialWidget;       ///< Serial widget.
     FirmwareModeWidget *m_firmwareModeWidget; ///< Firmware mode widget.
     GenericOperationWidget
-        *m_genericOperationWidget; ///< Generic operation widget.
+        *             m_genericOperationWidget; ///< Generic operation widget.
+    ManualModeWidget *m_manualModeWidget;       ///< Manual mode widget.
+    TestModeWidget *  m_testModeWidget;         ///< Test mode widget.
 
     MessageWidget *m_messageWidget; ///< Message widget.
 
