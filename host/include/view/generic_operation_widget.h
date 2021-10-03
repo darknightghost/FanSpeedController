@@ -7,7 +7,7 @@
 #include <locale/string_table.h>
 
 /**
- * @brief       Message widget.
+ * @brief       Generic operation widget.
  */
 class GenericOperationWidget : public QWidget {
     Q_OBJECT;

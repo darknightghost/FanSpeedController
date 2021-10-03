@@ -104,6 +104,7 @@ void BoardController::updateFirmwareMode()
         emit this->printError(
             QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        emit this->firmwareModeUpdated(false, FirmwareMode::Normal);
         return;
     }
 
@@ -127,6 +128,7 @@ void BoardController::updateFirmwareMode()
         emit this->printError(
             QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        emit this->firmwareModeUpdated(false, FirmwareMode::Normal);
         return;
     }
     switch (reply.header.replyType) {
@@ -145,6 +147,7 @@ void BoardController::updateFirmwareMode()
             emit this->printError(
                 QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            emit this->firmwareModeUpdated(false, FirmwareMode::Normal);
             return;
 
         default:
@@ -154,6 +157,7 @@ void BoardController::updateFirmwareMode()
             emit this->printError(
                 QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            emit this->firmwareModeUpdated(false, FirmwareMode::Normal);
             return;
     }
 
@@ -165,6 +169,7 @@ void BoardController::updateFirmwareMode()
         emit this->printError(
             QDateTime::currentDateTime(),
             m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        emit this->firmwareModeUpdated(false, FirmwareMode::Normal);
         return;
     }
 
@@ -183,7 +188,7 @@ void BoardController::updateFirmwareMode()
             emit this->printInfo(
                 QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_SUCCEED"));
-            emit this->firmwareModeUpdated(reply.mode);
+            emit this->firmwareModeUpdated(true, reply.mode);
             return;
 
         default:
@@ -193,6 +198,7 @@ void BoardController::updateFirmwareMode()
             emit this->printError(
                 QDateTime::currentDateTime(),
                 m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            emit this->firmwareModeUpdated(false, FirmwareMode::Normal);
             return;
     }
 }

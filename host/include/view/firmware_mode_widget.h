@@ -8,7 +8,7 @@
 #include <locale/string_table.h>
 
 /**
- * @brief       Message widget.
+ * @brief       Firmware mode widget.
  */
 class FirmwareModeWidget : public QWidget {
     Q_OBJECT;
@@ -20,6 +20,8 @@ class FirmwareModeWidget : public QWidget {
     QComboBox *  m_comboFirmwareMode; ///< Combobox to select mode.
     QPushButton *m_btnSet;            ///< Button open/close.
     QLineEdit *  m_txtCurrentMode;    ///< Text to show current mode.
+
+    QTimer *m_updateTimer; ///< Update timer.
 
   public:
     /**
@@ -70,7 +72,8 @@ class FirmwareModeWidget : public QWidget {
     /**
      * @brief       Firmware mode updated.
      *
+     * @param[in]   success Success flag.
      * @param[in]   mode    Firmware mode.
      */
-    void onFirmwareModeUpdated(FirmwareMode mode);
+    void onFirmwareModeUpdated(bool success, FirmwareMode mode);
 };

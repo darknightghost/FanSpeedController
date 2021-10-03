@@ -1,3 +1,4 @@
+#include <QtCore/QTimer>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
 
@@ -68,6 +69,13 @@ FirmwareModeWidget::FirmwareModeWidget(QWidget *        parent,
                   Qt::QueuedConnection);
     this->connect(this, &FirmwareModeWidget::setFirmwareMode, m_boardController,
                   &BoardController::setFirmwareMode, Qt::QueuedConnection);
+
+    m_updateTimer = new QTimer(this);
+    m_updateTimer->setInterval(100);
+    m_updateTimer->setSingleShot(true);
+    this->connect(m_updateTimer, &QTimer::timeout, [this]() -> void {
+        emit this->updateFirmwareMode();
+    });
 }
 
 /**
@@ -110,22 +118,27 @@ void FirmwareModeWidget::onBtnSetClicked()
 /**
  * @brief       Firmware mode updated.
  */
-void FirmwareModeWidget::onFirmwareModeUpdated(FirmwareMode mode)
+void FirmwareModeWidget::onFirmwareModeUpdated(bool success, FirmwareMode mode)
 {
-    switch (mode) {
-        case FirmwareMode::Normal:
-            m_txtCurrentMode->setText(
-                m_stringTable->getString("STR_FIRMWARE_MODE_NORMAL"));
-            break;
+    if (success) {
+        switch (mode) {
+            case FirmwareMode::Normal:
+                m_txtCurrentMode->setText(
+                    m_stringTable->getString("STR_FIRMWARE_MODE_NORMAL"));
+                break;
 
-        case FirmwareMode::Manual:
-            m_txtCurrentMode->setText(
-                m_stringTable->getString("STR_FIRMWARE_MODE_MANUAL"));
-            break;
+            case FirmwareMode::Manual:
+                m_txtCurrentMode->setText(
+                    m_stringTable->getString("STR_FIRMWARE_MODE_MANUAL"));
+                break;
 
-        case FirmwareMode::Test:
-            m_txtCurrentMode->setText(
-                m_stringTable->getString("STR_FIRMWARE_MODE_TEST"));
-            break;
+            case FirmwareMode::Test:
+                m_txtCurrentMode->setText(
+                    m_stringTable->getString("STR_FIRMWARE_MODE_TEST"));
+                break;
+        }
+    } else {
+        m_txtCurrentMode->setText("");
+        m_updateTimer->start();
     }
 }

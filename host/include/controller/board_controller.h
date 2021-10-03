@@ -71,9 +71,10 @@ class BoardController : public QThread {
     /**
      * @brief       Firmware mode signal.
      *
+     * @param[in]   success Success flag.
      * @param[in]   mode    Firmware mode.
      */
-    void firmwareModeUpdated(FirmwareMode mode);
+    void firmwareModeUpdated(bool success, FirmwareMode mode);
 
     /**
      * @brief       Firmware mode signal.
