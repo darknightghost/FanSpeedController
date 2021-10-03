@@ -32,13 +32,13 @@
 
 /// Port to read/write.
 #define PORT_READ_PWM_INPUT     ((uint8_t)0x00)
-#define PORT_READ_SPEED_INPUT   ((uint8_t)0x01)
+#define PORT_GET_SPEED_INPUT    ((uint8_t)0x01)
 #define PORT_WRITE_SPEED_OUTPUT ((uint8_t)0x00)
 #define PORT_WRITE_PWM_OUTPUT   ((uint8_t)0x01)
 
 /// Fan test command, manual mode only.
-#define CMD_TYPE_READ_SPEED ((uint8_t)0x20)
-#define CMD_TYPE_SET_PWM    ((uint8_t)0x21)
+#define CMD_TYPE_GET_SPEED ((uint8_t)0x20)
+#define CMD_TYPE_SET_PWM   ((uint8_t)0x21)
 
 /// Config.
 #define CMD_TYPE_READ_CONFIG  ((uint8_t)0x30)
@@ -59,7 +59,7 @@ enum class CMDType : uint8_t {
     SetMode     = CMD_TYPE_SET_MODE,     ///< Set firmware mode.
     ReadPort    = CMD_TYPE_READ_PORT,    ///< Read output port.
     WritePort   = CMD_TYPE_WRITE_PORT,   ///< Write input port.
-    ReadSpeed   = CMD_TYPE_READ_SPEED,   ///< Read fan speed.
+    GetSpeed    = CMD_TYPE_GET_SPEED,    ///< Get fan speed.
     SetPWM      = CMD_TYPE_SET_PWM,      ///< Set output pwm.
     ReacConfig  = CMD_TYPE_READ_CONFIG,  ///< Read config.
     WriteConfig = CMD_TYPE_WRITE_CONFIG, ///< Write config.
@@ -79,8 +79,8 @@ enum class FirmwareMode : uint8_t {
  * @brief   Readable port.
  */
 enum class ReadablePort : uint8_t {
-    PWMInput   = PORT_READ_PWM_INPUT,  ///< PWM input.
-    SpeedInput = PORT_READ_SPEED_INPUT ///< Speed input.
+    PWMInput   = PORT_READ_PWM_INPUT, ///< PWM input.
+    SpeedInput = PORT_GET_SPEED_INPUT ///< Speed input.
 };
 
 /**
@@ -169,9 +169,9 @@ struct CMDWritePort {
 };
 
 /**
- * @brief       Command ReadSpeed.
+ * @brief       Command GetSpeed.
  */
-struct CMDReadSpeed {
+struct CMDGetSpeed {
     struct CMDHeader header; ///< Command header.
 };
 
@@ -258,9 +258,9 @@ struct ReplyWritePort {
 };
 
 /**
- * @brief       Reply ReadSpeed.
+ * @brief       Reply GetSpeed.
  */
-struct ReplyReadSpeed {
+struct ReplyGetSpeed {
     struct ReplyHeader header; ///< Header.
     uint16_t           speed;  ///< Speed(HZ).
 };

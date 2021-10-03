@@ -140,7 +140,7 @@ static void cmd_read_port(uint8_t port)
             reply.value = PWM_INPUT ? 1 : 0;
             break;
 
-        case PORT_READ_SPEED_INPUT:
+        case PORT_GET_SPEED_INPUT:
             reply.value = SPEED_INPUT ? 1 : 0;
             break;
     }
@@ -181,10 +181,10 @@ static void cmd_write_port(uint8_t port, uint8_t value)
 /**
  * @brief       Read fan speed.
  */
-static void cmd_read_speed()
+static void cmd_get_speed()
 {
     // Reply.
-    __xdata struct ReplyReadSpeed reply;
+    __xdata struct ReplyGetSpeed reply;
     reply.header.replyType = REPLY_TYPE_SUCCESS;
     reply.speed            = input_speed();
 
@@ -267,8 +267,8 @@ _PARSE_CMD:
             goto _PARSE_CMD_WRITE_PORT;
         }
 
-        case CMD_TYPE_READ_SPEED: {
-            goto _PARSE_CMD_READ_SPEED;
+        case CMD_TYPE_GET_SPEED: {
+            goto _PARSE_CMD_GET_SPEED;
         }
 
         case CMD_TYPE_SET_PWM: {
@@ -342,7 +342,7 @@ _PARSE_CMD_READ_PORT : {
         }
 
         case PORT_READ_PWM_INPUT:
-        case PORT_READ_SPEED_INPUT: {
+        case PORT_GET_SPEED_INPUT: {
             cmd_read_port(byte);
             return;
         }
@@ -408,8 +408,8 @@ _PARSE_CMD_WRITE_PORT : {
     return;
 }
 
-_PARSE_CMD_READ_SPEED : {
-    cmd_read_speed();
+_PARSE_CMD_GET_SPEED : {
+    cmd_get_speed();
     return;
 }
 

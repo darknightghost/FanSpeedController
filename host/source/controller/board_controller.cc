@@ -297,9 +297,9 @@ void BoardController::updateSpeed()
     m_serialPort.clearRead();
 
     // Send command.
-    CMDReadSpeed command;
+    CMDGetSpeed command;
     command.header.cmdBegin = CMD_BEGIN;
-    command.header.cmdType  = CMDType::ReadSpeed;
+    command.header.cmdType  = CMDType::GetSpeed;
 
     if (this->sendCommand(reinterpret_cast<const uint8_t *>(&command),
                           sizeof(command))
@@ -322,8 +322,8 @@ void BoardController::updateSpeed()
                     .toUpper())));
 
     // Get reply.
-    ReplyReadSpeed reply;
-    uint8_t *      pReply = reinterpret_cast<uint8_t *>(&reply);
+    ReplyGetSpeed reply;
+    uint8_t *     pReply = reinterpret_cast<uint8_t *>(&reply);
 
     // Receive first byte.
     if (this->receiveReply(pReply, sizeof(uint8_t)) < 0) {
