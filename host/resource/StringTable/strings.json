@@ -79,6 +79,14 @@
 		"zh_CN" : "当前值 :",
 		"en_US" : "Current Value :"
 	},
+	"STR_LABEL_WRITE_SPEED_OUTPUT_PORT" : {
+		"zh_CN" : "写转速输出端口 :",
+		"en_US" : "Write Speed Output Port :"
+	},
+	"STR_LABEL_WRITE_PWM_OUTPUT_PORT" : {
+		"zh_CN" : "写PWM输出端口 :",
+		"en_US" : "Write PWM Output Port :"
+	},
 	"STR_MESSAGE_INFO":{
 		"zh_CN" : "%1 信息 : %2",
 		"en_US" : "%1 Info  : %2"

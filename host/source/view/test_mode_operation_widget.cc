@@ -44,6 +44,38 @@ TestModeWidget::TestModeWidget(QWidget *        parent,
     m_txtPWMInputValue = new QLineEdit();
     readLayout->addWidget(m_txtPWMInputValue, 1, 2);
 
+    readLayout->setColumnStretch(0, 0);
+    readLayout->setColumnStretch(1, 0);
+    readLayout->setColumnStretch(2, 100);
+
+    // Write.
+    QGridLayout *writeLayout = new QGridLayout();
+    layout->addLayout(writeLayout);
+
+    label = new QLabel(
+        m_stringTable->getString("STR_LABEL_WRITE_SPEED_OUTPUT_PORT"));
+    writeLayout->addWidget(label, 0, 0);
+
+    m_btnSetSpeedOutputWrite0 = new QPushButton("0");
+    writeLayout->addWidget(m_btnSetSpeedOutputWrite0, 0, 1);
+
+    m_btnSetSpeedOutputWrite1 = new QPushButton("1");
+    writeLayout->addWidget(m_btnSetSpeedOutputWrite1, 0, 2);
+
+    label = new QLabel(
+        m_stringTable->getString("STR_LABEL_WRITE_PWM_OUTPUT_PORT"));
+    writeLayout->addWidget(label, 1, 0);
+
+    m_btnSetPWMOutputWrite0 = new QPushButton("0");
+    writeLayout->addWidget(m_btnSetPWMOutputWrite0, 1, 1);
+
+    m_btnSetPWMOutputWrite1 = new QPushButton("1");
+    writeLayout->addWidget(m_btnSetPWMOutputWrite1, 1, 2);
+
+    writeLayout->setColumnStretch(0, 100);
+    writeLayout->setColumnStretch(1, 0);
+    writeLayout->setColumnStretch(2, 0);
+
     // Connect signals.
     this->connect(m_boardController, &BoardController::opened, this,
                   &TestModeWidget::onOpened, Qt::QueuedConnection);
