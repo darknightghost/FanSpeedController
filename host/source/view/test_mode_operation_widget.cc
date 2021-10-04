@@ -156,7 +156,7 @@ void TestModeWidget::onBtnStartReadSpeedInputClicked()
 {
     this->disconnect(m_btnStartStopReadSpeedInput);
     m_btnStartStopReadSpeedInput->setText(
-        m_stringTable->getString("STR_BTN_STOP_READING_SPEED_INPUT_PORT{"));
+        m_stringTable->getString("STR_BTN_STOP_READING_SPEED_INPUT_PORT"));
     this->connect(m_btnStartStopReadSpeedInput, &QPushButton::clicked, this,
                   &TestModeWidget::onBtnStopReadSpeedInputClicked);
     m_updateSpeedInput = true;
@@ -169,7 +169,7 @@ void TestModeWidget::onBtnStopReadSpeedInputClicked()
 {
     this->disconnect(m_btnStartStopReadSpeedInput);
     m_btnStartStopReadSpeedInput->setText(
-        m_stringTable->getString("STR_BTN_START_READING_SPEED_INPUT_PORT{"));
+        m_stringTable->getString("STR_BTN_START_READING_SPEED_INPUT_PORT"));
     this->connect(m_btnStartStopReadSpeedInput, &QPushButton::clicked, this,
                   &TestModeWidget::onBtnStartReadSpeedInputClicked);
     m_updateSpeedInput = false;
@@ -182,7 +182,7 @@ void TestModeWidget::onBtnStartReadPWMInputClicked()
 {
     this->disconnect(m_btnStartStopReadPWMInput);
     m_btnStartStopReadPWMInput->setText(
-        m_stringTable->getString("STR_BTN_STOP_READING_PWM_INPUT_PORT{"));
+        m_stringTable->getString("STR_BTN_STOP_READING_PWM_INPUT_PORT"));
     this->connect(m_btnStartStopReadPWMInput, &QPushButton::clicked, this,
                   &TestModeWidget::onBtnStopReadPWMInputClicked);
     m_updatePWMInput = true;
@@ -195,7 +195,7 @@ void TestModeWidget::onBtnStopReadPWMInputClicked()
 {
     this->disconnect(m_btnStartStopReadPWMInput);
     m_btnStartStopReadPWMInput->setText(
-        m_stringTable->getString("STR_BTN_START_READING_PWM_INPUT_PORT{"));
+        m_stringTable->getString("STR_BTN_START_READING_PWM_INPUT_PORT"));
     this->connect(m_btnStartStopReadPWMInput, &QPushButton::clicked, this,
                   &TestModeWidget::onBtnStartReadPWMInputClicked);
     m_updatePWMInput = false;
