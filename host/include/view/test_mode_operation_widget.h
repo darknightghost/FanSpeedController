@@ -28,12 +28,14 @@ class TestModeWidget : public QWidget {
         *m_txtPWMInputValue; ///< Text to show the value of wpm input port.
 
     QPushButton
-        *m_btnSetSpeedOutput0; ///< Button to set speed output port to 0.
+        *m_btnSetSpeedOutputWrite0; ///< Button to set speed output port to 0.
     QPushButton
-        *m_btnSetSpeedOutput1; ///< Button to set speed output port to 1.
+        *m_btnSetSpeedOutputWrite1; ///< Button to set speed output port to 1.
 
-    QPushButton *m_btnSetPWMOutput0; ///< Button to set PWM output port to 0.
-    QPushButton *m_btnSetPWMOutput1; ///< Button to set PWM output port to 1.
+    QPushButton
+        *m_btnSetPWMOutputWrite0; ///< Button to set PWM output port to 0.
+    QPushButton
+        *m_btnSetPWMOutputWrite1; ///< Button to set PWM output port to 1.
 
     QTimer *m_updateTimer;      ///< Update timer.
     bool    m_updateSpeedInput; ///< Update speed input port.

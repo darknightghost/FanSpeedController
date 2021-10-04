@@ -39,6 +39,22 @@
 		"zh_CN" : "停止读取上电时间(&B)",
 		"en_US" : "Stop Reading &Boot Time"
 	},
+	"STR_BTN_START_READING_SPEED_INPUT_PORT" : {
+		"zh_CN" : "开始读取转速输入端口(&S)",
+		"en_US" : "Start Reading &Speed Input Port"
+	},
+	"STR_BTN_STOP_READING_SPEED_OUTPUT_PORT" : {
+		"zh_CN" : "停止读取转速输入端口(&S)",
+		"en_US" : "Stop Reading &Speed Input Port"
+	},
+	"STR_BTN_START_READING_PWM_INPUT_PORT" : {
+		"zh_CN" : "开始读取PWM输入端口(&P)",
+		"en_US" : "Start Reading &PWM input Port"
+	},
+	"STR_BTN_STOP_READING_PWM_OUTPUT_PORT" : {
+		"zh_CN" : "停止读取PWM输入端口(&P)",
+		"en_US" : "Stop Reading &PWM Output Port"
+	},
 	"STR_LABEL_SERIAL" : {
 		"zh_CN" : "串口 :",
 		"en_US" : "Serial :"
@@ -58,6 +74,10 @@
 	"STR_LABEL_BOOT_TIME" : {
 		"zh_CN" : "上电时间 :",
 		"en_US" : "Boot Time :"
+	},
+	"STR_LABEL_CURRENT_VALUE" : {
+		"zh_CN" : "当前值 :",
+		"en_US" : "Current Value :"
 	},
 	"STR_MESSAGE_INFO":{
 		"zh_CN" : "%1 信息 : %2",

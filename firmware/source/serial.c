@@ -365,7 +365,7 @@ _PARSE_CMD_READ_PORT : {
         }
 
         case PORT_READ_PWM_INPUT:
-        case PORT_GET_SPEED_INPUT: {
+        case PORT_READ_SPEED_INPUT: {
             cmd_read_port(byte);
             return;
         }
