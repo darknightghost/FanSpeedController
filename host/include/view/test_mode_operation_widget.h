@@ -58,6 +58,22 @@ class TestModeWidget : public QWidget {
      */
     virtual ~TestModeWidget();
 
+  signals:
+    /**
+     * @brief       Read port.
+     *
+     * @param[in]   port    Port.
+     */
+    void readPort(ReadablePort port);
+
+    /**
+     * @brief       Write port.
+     *
+     * @param[in]   port    Port.
+     * @param[in]   value   Value.
+     */
+    void writedPort(WritablePort port, bool value);
+
   private slots:
     /**
      * @brief       Opened slots.
@@ -76,4 +92,68 @@ class TestModeWidget : public QWidget {
      * @param[in]   mode    Firmware mode.
      */
     void onFirmwareModeUpdated(bool success, FirmwareMode mode);
+
+    /**
+     * @brief       On button start reading speed input clicked.
+     */
+    void onBtnStartReadSpeedInputClicked();
+
+    /**
+     * @brief       On button stop reading speed input clicked.
+     */
+    void onBtnStopReadSpeedInputClicked();
+
+    /**
+     * @brief       On button start reading PWM input clicked.
+     */
+    void onBtnStartReadPWMInputClicked();
+
+    /**
+     * @brief       On button stop reading PWM input clicked.
+     */
+    void onBtnStopReadPWMInputClicked();
+
+    /**
+     * @brief       On button set speed output port to 0 clicked.
+     */
+    void onBtnSetSpeedOutputWrite0();
+
+    /**
+     * @brief       On button set speed output port to 1 clicked.
+     */
+    void onBtnSetSpeedOutputWrite1();
+
+    /**
+     * @brief       On button set PWM output port to 0 clicked.
+     */
+    void onBtnSetPWMOutputWrite0();
+
+    /**
+     * @brief       On button set PWM output port to 1 clicked.
+     */
+    void onBtnSetPWMOutputWrite1();
+
+    /**
+     * @brief       Port has been read.
+     *
+     * @param[in]   port    Port.
+     * @param[in]   value   Value.
+     */
+    void onPortRead(ReadablePort port, bool value);
+
+    /**
+     * @brief       On timer.
+     */
+    void onTimer();
+
+  private:
+    /**
+     * @brief       Enable widget.
+     */
+    void enable();
+
+    /**
+     * @brief       Disable widget.
+     */
+    void disable();
 };

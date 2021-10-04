@@ -502,6 +502,200 @@ void BoardController::updateClock()
 }
 
 /**
+ * @brief       Read port.
+ */
+void BoardController::readPort(ReadablePort port)
+{
+    if (! m_serialPort.isOpened()) {
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+    m_serialPort.clearRead();
+
+    // Send command.
+    CMDReadPort command;
+    command.header.cmdBegin = CMD_BEGIN;
+    command.header.cmdType  = CMDType::ReadPort;
+    command.port            = port;
+
+    if (this->sendCommand(reinterpret_cast<const uint8_t *>(&command),
+                          sizeof(command))
+        < 0) {
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_COMMAND_SEND_FAILED"));
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+
+    emit this->printInfo(
+        QDateTime::currentDateTime(),
+        m_stringTable->getString("STR_MESSAGE_COMMAND_SEND")
+            .arg(QString::fromUtf8(
+                QByteArray(reinterpret_cast<char *>(&command), sizeof(command))
+                    .toHex(' ')
+                    .toUpper())));
+
+    // Get reply.
+    ReplyReadPort reply;
+    uint8_t *     pReply = reinterpret_cast<uint8_t *>(&reply);
+
+    // Receive first byte.
+    if (this->receiveReply(pReply, sizeof(uint8_t)) < 0) {
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+    switch (reply.header.replyType) {
+        case ReplyType::Success:
+            break;
+
+        case ReplyType::Failed:
+            emit this->printInfo(
+                QDateTime::currentDateTime(),
+                m_stringTable->getString("STR_MESSAGE_REPLY")
+                    .arg(QString::fromUtf8(
+                        QByteArray(reinterpret_cast<char *>(pReply),
+                                   sizeof(uint8_t))
+                            .toHex(' ')
+                            .toUpper())));
+            emit this->printError(
+                QDateTime::currentDateTime(),
+                m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            return;
+
+        default:
+            emit this->printError(
+                QDateTime::currentDateTime(),
+                m_stringTable->getString("STR_MESSAGE_REPLY_PARSE_ERROR"));
+            emit this->printError(
+                QDateTime::currentDateTime(),
+                m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            return;
+    }
+
+    // Receive remaining data,
+    if (this->receiveReply(pReply + 1, sizeof(reply) - sizeof(uint8_t)) < 0) {
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+
+    emit this->printInfo(
+        QDateTime::currentDateTime(),
+        m_stringTable->getString("STR_MESSAGE_REPLY")
+            .arg(QString::fromUtf8(
+                QByteArray(reinterpret_cast<char *>(&reply), sizeof(reply))
+                    .toHex(' ')
+                    .toUpper())));
+    // Parse type.
+    emit this->printInfo(
+        QDateTime::currentDateTime(),
+        m_stringTable->getString("STR_MESSAGE_OPERATION_SUCCEED"));
+    emit this->portRead(port, reply.value);
+    return;
+}
+
+/**
+ * @brief       Write port.
+ */
+void BoardController::writedPort(WritablePort port, bool value)
+{
+    if (! m_serialPort.isOpened()) {
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+    m_serialPort.clearRead();
+
+    // Send command.
+    CMDWritePort command;
+    command.header.cmdBegin = CMD_BEGIN;
+    command.header.cmdType  = CMDType::WritePort;
+    command.port            = port;
+    command.value           = value ? 1 : 0;
+
+    if (this->sendCommand(reinterpret_cast<const uint8_t *>(&command),
+                          sizeof(command))
+        < 0) {
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_COMMAND_SEND_FAILED"));
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+
+    emit this->printInfo(
+        QDateTime::currentDateTime(),
+        m_stringTable->getString("STR_MESSAGE_COMMAND_SEND")
+            .arg(QString::fromUtf8(
+                QByteArray(reinterpret_cast<char *>(&command), sizeof(command))
+                    .toHex(' ')
+                    .toUpper())));
+
+    // Get reply.
+    ReplyWritePort reply;
+    uint8_t *      pReply = reinterpret_cast<uint8_t *>(&reply);
+
+    // Receive first byte.
+    if (this->receiveReply(pReply, sizeof(reply)) < 0) {
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_REPLY_RECV_FAILED"));
+        emit this->printError(
+            QDateTime::currentDateTime(),
+            m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+        return;
+    }
+
+    emit this->printInfo(
+        QDateTime::currentDateTime(),
+        m_stringTable->getString("STR_MESSAGE_REPLY")
+            .arg(QString::fromUtf8(
+                QByteArray(reinterpret_cast<char *>(&reply), sizeof(reply))
+                    .toHex(' ')
+                    .toUpper())));
+
+    switch (reply.header.replyType) {
+        case ReplyType::Success:
+            emit this->printInfo(
+                QDateTime::currentDateTime(),
+                m_stringTable->getString("STR_MESSAGE_OPERATION_SUCCEED"));
+            break;
+
+        case ReplyType::Failed:
+            emit this->printError(
+                QDateTime::currentDateTime(),
+                m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            return;
+
+        default:
+            emit this->printError(
+                QDateTime::currentDateTime(),
+                m_stringTable->getString("STR_MESSAGE_REPLY_PARSE_ERROR"));
+            emit this->printError(
+                QDateTime::currentDateTime(),
+                m_stringTable->getString("STR_MESSAGE_OPERATION_FAILED"));
+            return;
+    }
+}
+
+/**
  * @brief       Send command.
  */
 qint64 BoardController::sendCommand(const uint8_t *data, size_t size)

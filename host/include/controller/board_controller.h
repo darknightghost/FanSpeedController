@@ -90,6 +90,14 @@ class BoardController : public QThread {
      */
     void clockUpdated(quint32 time);
 
+    /**
+     * @brief       Port has been read.
+     *
+     * @param[in]   port    Port.
+     * @param[in]   value   Value.
+     */
+    void portRead(ReadablePort port, bool value);
+
   public slots:
     /**
      * @brief       Open serial.
@@ -129,6 +137,21 @@ class BoardController : public QThread {
      * @brief       Update clock.
      */
     void updateClock();
+
+    /**
+     * @brief       Read port.
+     *
+     * @param[in]   port    Port.
+     */
+    void readPort(ReadablePort port);
+
+    /**
+     * @brief       Write port.
+     *
+     * @param[in]   port    Port.
+     * @param[in]   value   Value.
+     */
+    void writedPort(WritablePort port, bool value);
 
   private:
     /**
