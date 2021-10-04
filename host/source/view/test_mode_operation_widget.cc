@@ -72,9 +72,10 @@ TestModeWidget::TestModeWidget(QWidget *        parent,
     m_btnSetPWMOutputWrite1 = new QPushButton("1");
     writeLayout->addWidget(m_btnSetPWMOutputWrite1, 1, 2);
 
-    writeLayout->setColumnStretch(0, 100);
+    writeLayout->setColumnStretch(0, 0);
     writeLayout->setColumnStretch(1, 0);
     writeLayout->setColumnStretch(2, 0);
+    writeLayout->setColumnStretch(3, 100);
 
     // Connect signals.
     this->connect(m_boardController, &BoardController::opened, this,
