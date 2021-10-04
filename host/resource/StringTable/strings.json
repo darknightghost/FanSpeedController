@@ -43,7 +43,7 @@
 		"zh_CN" : "开始读取转速输入端口(&S)",
 		"en_US" : "Start Reading &Speed Input Port"
 	},
-	"STR_BTN_STOP_READING_SPEED_OUTPUT_PORT" : {
+	"STR_BTN_STOP_READING_SPEED_INPUT_PORT" : {
 		"zh_CN" : "停止读取转速输入端口(&S)",
 		"en_US" : "Stop Reading &Speed Input Port"
 	},
@@ -51,7 +51,7 @@
 		"zh_CN" : "开始读取PWM输入端口(&P)",
 		"en_US" : "Start Reading &PWM input Port"
 	},
-	"STR_BTN_STOP_READING_PWM_OUTPUT_PORT" : {
+	"STR_BTN_STOP_READING_PWM_INPUT_PORT" : {
 		"zh_CN" : "停止读取PWM输入端口(&P)",
 		"en_US" : "Stop Reading &PWM Output Port"
 	},
