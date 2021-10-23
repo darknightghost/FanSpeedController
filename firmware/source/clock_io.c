@@ -166,7 +166,7 @@ uint16_t input_speed()
 /**
  * @brief       INT1 ISR.
  */
-void int1_isr(void) __interrupt INT_INT1
+void int1_isr(void) __interrupt INT_INT3
 {
     ++l_speed_current_sampling_count;
 }

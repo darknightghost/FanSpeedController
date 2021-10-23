@@ -15,15 +15,15 @@
     #define __sbit uint8_t
     #define __interrupt
     #define INT_TIMER0
-    #define INT_INT1
+    #define INT_INT3
     #define INT_UART1
     #define INT_PCA
 
 #else
     #define INT_TIMER0 1
-    #define INT_INT1   2
     #define INT_UART1  4
     #define INT_PCA    7
+    #define INT_INT3   11
 
 #endif
 
