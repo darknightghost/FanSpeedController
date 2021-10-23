@@ -126,9 +126,8 @@ void io_init()
     P5M0 = 0x30;
     P5   = 0xFF;
 
-    // Interrupt 1 : falling edge trigge.
-    TCON |= 0x04;
-    TCON &= 0xF7;
+    // Enable interrupt 3.
+    INTCLKO = 0;
 }
 
 /**
@@ -136,7 +135,8 @@ void io_init()
  */
 void enable_io()
 {
-    IE |= 0x04;
+    // Enable interrupt 3.
+    INTCLKO = 0x20;
 }
 
 /**
@@ -169,21 +169,4 @@ uint16_t input_speed()
 void int1_isr(void) __interrupt INT_INT3
 {
     ++l_speed_current_sampling_count;
-}
-
-/**
- * @brief       PCA ISR.
- */
-// 30 instruction cycle.
-void pca_isr(void) __interrupt INT_PCA
-{
-    ++l_input_sampling_pwm_count;
-    if (PWM_INPUT > 0) {
-        ++l_input_sampling_pwm_high_level_count;
-    }
-    if (l_input_sampling_pwm_count >= PWM_SAMPLING_COUNT_MAX) {
-        l_input_pwm_high_level_count = l_input_sampling_pwm_high_level_count;
-        l_input_sampling_pwm_count   = 0;
-        l_input_sampling_pwm_high_level_count = 0;
-    }
 }
