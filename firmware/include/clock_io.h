@@ -66,3 +66,8 @@ extern uint16_t input_speed();
  * @brief       INT1 ISR.
  */
 extern void int1_isr(void) __interrupt INT_INT1;
+
+/**
+ * @brief       PCA ISR.
+ */
+extern void pca_isr(void) __interrupt INT_PCA;

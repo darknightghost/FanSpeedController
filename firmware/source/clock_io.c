@@ -23,6 +23,13 @@ static __data uint16_t l_speed_input_count = 0; ///< Input speed count.
 static __data uint16_t l_speed_input_hz    = 0; ///< Input speed hz.
 
 // Input PWM.
+#define PWM_SAMPLING_COUNT_MAX ((uint8_t)100)
+static __data uint8_t l_input_sampling_pwm_count
+    = 0; ///< Sampling input pwm count.
+static __data uint8_t l_input_sampling_pwm_high_level_count
+    = 0; ///< Sampling input pwm high level count.
+static __data uint8_t l_input_pwm_high_level_count = 0; ///< Input pwm count.
+
 /*
 static __data uint16_t l_output_change_tick = 0; ///< Input speed count.
 static __data uint16_t l_current_input_pwm_high_level_count
@@ -162,4 +169,21 @@ uint16_t input_speed()
 void int1_isr(void) __interrupt INT_INT1
 {
     ++l_speed_current_sampling_count;
+}
+
+/**
+ * @brief       PCA ISR.
+ */
+// 30 instruction cycle.
+void pca_isr(void) __interrupt INT_PCA
+{
+    ++l_input_sampling_pwm_count;
+    if (PWM_INPUT > 0) {
+        ++l_input_sampling_pwm_high_level_count;
+    }
+    if (l_input_sampling_pwm_count >= PWM_SAMPLING_COUNT_MAX) {
+        l_input_pwm_high_level_count = l_input_sampling_pwm_high_level_count;
+        l_input_sampling_pwm_count   = 0;
+        l_input_sampling_pwm_high_level_count = 0;
+    }
 }

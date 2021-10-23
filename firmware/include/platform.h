@@ -17,11 +17,13 @@
     #define INT_TIMER0
     #define INT_INT1
     #define INT_UART1
+    #define INT_PCA
 
 #else
     #define INT_TIMER0 1
     #define INT_INT1   2
     #define INT_UART1  4
+    #define INT_PCA    7
 
 #endif
 
@@ -89,10 +91,10 @@ __sfr __at(0xC7) IAP_CONTR;
 __sfr __at(0xF5) IAP_TPS;
 
 // Board
-#define PWM_INPUT    P5_4
-#define SPEED_OUTPUT P5_5
-#define SPEED_INPUT  P3_3
-#define PWM_OUTPUT   P3_2
+#define PWM_INPUT    P3_2
+#define SPEED_OUTPUT P3_3
+#define SPEED_INPUT  P5_5
+#define PWM_OUTPUT   P5_4
 
 // Generate bit mask.
 #define MASK(type, value) (~((type)(value)))
